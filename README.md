@@ -39,12 +39,22 @@ evaluator. Baseline numbers are as reported in the SciEvent paper.
 | DEGREE | 29.84 | 21.57 | 56.85 |
 | OneIE *(previous best)* | **53.57** | **41.61** | 72.40 |
 | GPT-4o (5-shot) | 49.98 | 34.47 | **75.08** |
-| **CARVE (ours)** | **57.95 ± 2.46** | **50.48 ± 1.15** | **76.93 ± 0.80** |
-| | **+4.38** | **+8.87** | **+1.85** |
+| **CARVE (ours)** | 57.88 | **50.48** | 76.96 |
+| 95 % bootstrap CI | [53.40, 62.37] | **[45.49, 55.48]** | [72.68, 80.90] |
+| resamples beating baseline | 97.1 % | **100.0 %** | 82.1 % |
 
-Every individual seed beats every target. Full per-domain, per-role, per-event-type and
-all-matching-mode tables are in [`docs/PAPER_VI.md`](docs/PAPER_VI.md) and
-[`docs/PAPER_NOTES.md`](docs/PAPER_NOTES.md).
+**The three metrics are not claimed at the same strength.** Bootstrapping 2000 resamples
+over the 163 test windows, only **Arg-C — the primary metric — is a statistically solid
+improvement**: every resample beats the published baseline and the interval's lower bound
+is still 3.88 above it. Arg-I improves but its interval *includes* the baseline. Trigger
+ROUGE-L is **not distinguishable** from the baseline at this sample size, and we do not
+claim it as a gain. A paired test against OneIE is impossible — the SciEvent paper reports
+aggregate numbers only.
+
+Full per-domain, per-role, per-event-type and all-matching-mode tables are in
+[`docs/PAPER_VI.md`](docs/PAPER_VI.md) and [`docs/PAPER_NOTES.md`](docs/PAPER_NOTES.md);
+every experiment run for the submission is in
+[`docs/NAACL_FINDINGS.md`](docs/NAACL_FINDINGS.md).
 
 ### An honest decomposition
 
@@ -78,14 +88,16 @@ Window text (whitespace tokens)
                          (on the unconditioned states; used only for ROUGE-L)
 ```
 
-Four design decisions, each forced by a measurement:
+Four design decisions were derived from measurements, then tested by single-factor
+ablation. **Two survived and two did not** — we report both, because the failure is
+itself the more useful result:
 
-| Decision | Evidence |
-|---|---|
-| BIO tagging rather than span enumeration | Measured ceiling of the formulation is **99.70** Arg-C IoU — it costs ~0.3 F1 |
-| **Two** disjoint BIO heads, not one | Cross-group span overlap is **5.9 %**, within-group only ≤2.4 % |
-| Explicit event-type head + conditioning | The metric is event-type sensitive with one event per window, so a wrong type annihilates every argument in it; oracle typing is worth **+4.72** Arg-C |
-| Confidence-thresholded decoding | The raw tagger emits **784 spans against 497 gold** — a calibration failure, not a representation failure |
+| Decision | Motivating measurement | Ablation verdict |
+|---|---|---|
+| BIO tagging rather than span enumeration | Measured ceiling of the formulation is **99.70** Arg-C IoU — it costs ~0.3 F1 | **kept** (the formulation is not the bottleneck) |
+| Confidence-thresholded decoding | The raw tagger emits **784 spans against 497 gold** — a calibration failure, not a representation failure | **kept**, +9.12 dev / +10.59 test |
+| **Two** disjoint BIO heads, not one | Cross-group span overlap is **5.9 %**, within-group only ≤2.4 % | **refuted**: −two heads is +0.75, inside seed variance → **inert** |
+| Explicit event-type head + conditioning | Oracle typing is worth **+4.72** Arg-C | **partly refuted**: the head is required (the metric is type-sensitive), the *conditioning pathway* is **inert** (−0.24) |
 
 Frozen decoding rule: `tau = 0.90`, `min_len = 3`, `merge_gap = 0`
 (see [`assets/decoding_rules.json`](assets/decoding_rules.json)).
@@ -284,8 +296,18 @@ numbers to the last decimal.
 ## Limitations
 
 - **Short spans.** Recall at IoU > 0.5 is **14.3 %** for 1–4-token gold spans, against ~60 %
-  for 10–34. This is self-inflicted by `min_len = 3` and `tau = 0.90`; a length-conditioned
-  threshold should recover much of it.
+  for 10–34. We **tested** the obvious fix — a length-conditioned threshold with a finite
+  short-span branch — and it gains **+0.04**. The reason is measurable: short outputs of the
+  role head are *fragments* of a clause-level segmentation, not deliberate short
+  predictions (3.0 % precision at length 1–2), and confidence carries no signal for them
+  (0 of 5 correct at conf ≥ 0.95). `min_len = 3` is therefore the correct rule, and this is
+  a **representation** limit rather than a decoding artifact.
+- **A single benchmark.** Every number here is SciEvent. We had planned a second benchmark
+  as a negative control, predicting the method would fail on mention-sized targets, but a
+  controlled within-benchmark test refuted that prediction (Agent, 2.4 tokens → 81.00;
+  Context, 11.0 tokens → 33.97), so difficulty is driven by role semantics rather than span
+  length. We dropped the experiment rather than run it without a hypothesis. Generalisation
+  beyond SciEvent is untested and is the main open risk.
 - **Digital Humanities** scores 29.75 against 74.39 for computational biology. We reproduce
   the humanities gap the SciEvent paper reports and do **not** close it.
 - **Tail roles score zero.** Analysis (10 test instances), Contradictions (1), Ethical (1).
