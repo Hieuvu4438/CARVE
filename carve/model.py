@@ -1,30 +1,26 @@
-"""CARVE model: a multi-task word-level span tagger.
+"""Stage 1 model: the CARVE-simple proposer, a word-level span tagger.
 
-Architecture (H1, "SASR" = Segment-Aware Span-Role tagger):
-
-    shared encoder (DeBERTa-v3-large by default)
+    shared encoder (DeBERTa-v3-large)
         -> first-subword pooling to word-level states
-        -> ROLE head : BIO over the 9 scored semantic roles
-        -> AAO  head : BIO over <Agent, Action, PrimaryObject, SecondaryObject>
-        -> TYPE head : 4-way window event-type classification (attention pooled)
+        -> SPAN head : one BIO tagger over 13 span types
+                       (9 scored roles + Agent / Action / PrimaryObject / SecondaryObject)
+        -> TYPE head : 4-way window event-type classifier (attention pooled)
 
-Rationale: the official metric is trigger-insensitive but event-type sensitive,
-and the scored arguments are long, near-contiguous, mutually non-overlapping
-clause spans. That is a span-segmentation problem, not an entity-mention
-problem, so a discriminative word tagger dominates generative copying
-(cf. DEGREE recall of 19.1 on this benchmark).
+The scored arguments of SciEvent are long, near-contiguous, mutually
+non-overlapping clause spans, so argument extraction is span segmentation: a
+discriminative word tagger, not a generative or mention-level extractor.
 
-Event-type conditioning is applied by adding a learned event-type embedding to
-the word states before the ROLE head. During training we feed the *gold* type
-with probability `type_teacher_p` and the model's own argmax otherwise
-(scheduled sampling), so train and inference distributions stay aligned.
+Two design decisions of the original CARVE were removed because controlled
+single-factor ablations showed them to be inert: separate BIO heads for the two
+span groups, and conditioning the role head on the predicted event type. The
+event-type head itself is required (the metric is event-type sensitive).
 """
 
 import torch
 import torch.nn as nn
 from transformers import AutoConfig, AutoModel
 
-from carve.crf import CRF
+from carve.data import EVENT_TYPES, MERGED_LABELS
 
 
 class AttentionPool(nn.Module):
@@ -39,48 +35,27 @@ class AttentionPool(nn.Module):
         return (x * w).sum(1)
 
 
-class CarveModel(nn.Module):
-    def __init__(
-        self,
-        model_name,
-        n_role_labels,
-        n_aao_labels,
-        n_event_types,
-        dropout=0.1,
-        use_crf=False,
-        use_span_role=False,
-        use_type_cond=True,
-        single_head=False,
-    ):
+class CarveTagger(nn.Module):
+    def __init__(self, model_name, n_labels=len(MERGED_LABELS), n_event_types=len(EVENT_TYPES), dropout=0.1):
         super().__init__()
         self.config = AutoConfig.from_pretrained(model_name)
-        # NOTE: several checkpoints (e.g. deberta-v3-large) store fp16 weights and
+        # Master weights must be fp32: deberta-v3-large ships fp16 weights and
         # transformers>=5 honours that dtype, which makes AdamW produce NaN on the
-        # very first step. Master weights must be fp32; bf16 comes from autocast.
+        # first step. bf16 comes from autocast only.
         self.encoder = AutoModel.from_pretrained(model_name, dtype=torch.float32)
         h = self.config.hidden_size
         self.dropout = nn.Dropout(dropout)
         self.pool = AttentionPool(h)
         self.type_head = nn.Linear(h, n_event_types)
+        # Not read by the forward pass: this is the embedding of the removed
+        # type-conditioning pathway, zero-initialised. It is kept (with the random
+        # draw in `forward`) so that parameter initialisation and the dropout RNG
+        # stream follow the reported run. Measured: with both, one epoch of the
+        # released code matches the development code to within GPU
+        # nondeterminism; without them the run follows a different random stream.
         self.type_emb = nn.Embedding(n_event_types, h)
         nn.init.zeros_(self.type_emb.weight)
-        self.use_type_cond = use_type_cond
-        self.single_head = single_head
-        # Under `single_head` the ROLE head carries the merged label space and the
-        # AAO head does not exist; this ablates the two-disjoint-heads decision.
-        self.role_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_role_labels))
-        if not single_head:
-            self.aao_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_aao_labels))
-        self.use_span_role = use_span_role
-        if use_span_role:
-            # span-level role classifier: [h_start ; h_end ; mean(h)] -> role
-            self.span_role_head = nn.Sequential(
-                nn.Linear(3 * h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_role_labels // 2)
-            )
-        self.use_crf = use_crf
-        if use_crf:
-            self.role_crf = CRF(n_role_labels)
-            self.aao_crf = CRF(n_aao_labels)
+        self.role_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_labels))
 
     def word_states(self, input_ids, attention_mask, word_index, word_mask):
         out = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
@@ -90,34 +65,10 @@ class CarveModel(nn.Module):
         w = w * word_mask.unsqueeze(-1)
         return self.dropout(w)
 
-    def forward(self, input_ids, attention_mask, word_index, word_mask, gold_type=None, type_teacher_p=1.0, return_states=False):
+    def forward(self, input_ids, attention_mask, word_index, word_mask, training=False):
+        """Returns (type_logits [B, 4], span_logits [B, W, 27])."""
         w = self.word_states(input_ids, attention_mask, word_index, word_mask)
-        pooled = self.pool(w, word_mask.bool())
-        type_logits = self.type_head(pooled)
-
-        if gold_type is not None:
-            pred = type_logits.argmax(-1)
-            keep = (torch.rand_like(pred, dtype=torch.float) < type_teacher_p)
-            cond = torch.where(keep, gold_type, pred)
-        else:
-            cond = type_logits.argmax(-1)
-        w_cond = w + self.type_emb(cond).unsqueeze(1) if self.use_type_cond else w
-
-        aao_logits = None if self.single_head else self.aao_head(w)
-        out = (type_logits, self.role_head(w_cond), aao_logits)
-        return out + (w_cond,) if return_states else out
-
-    def span_roles(self, w_cond, spans):
-        """Classify a list of (batch_index, start, end) spans into role types.
-
-        The BIO head decides a role per *token*; this head sees the whole span at
-        once. It targets the Arg-I vs Arg-C gap, which is pure role confusion:
-        the span is right and the label is wrong.
-        """
-        if not spans:
-            return None
-        reps = []
-        for b, s, e in spans:
-            h = w_cond[b, s:e]
-            reps.append(torch.cat([w_cond[b, s], w_cond[b, e - 1], h.mean(0)], dim=-1))
-        return self.span_role_head(torch.stack(reps))
+        type_logits = self.type_head(self.pool(w, word_mask.bool()))
+        if training:   # value unused; see `type_emb` above
+            torch.rand_like(type_logits.argmax(-1), dtype=torch.float)
+        return type_logits, self.role_head(w)

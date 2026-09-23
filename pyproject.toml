@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "carve"
-version = "1.0.0"
-description = "Clause-level Argument Recovery Via sEgmentation for scientific event extraction"
+version = "2.0.0"
+description = "CARVE-simple + HONE: propose-then-verify argument extraction for scientific event extraction (SciEvent)"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }

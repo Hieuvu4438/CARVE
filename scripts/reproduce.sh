@@ -1,37 +1,38 @@
 #!/usr/bin/env bash
-# End-to-end reproduction of the CARVE results. Run from the repository root.
+# End-to-end reproduction of CARVE-simple + HONE. Run from the repository root
+# after `bash scripts/setup_data.sh`.
 #
-# Protocol: stages 1-3 use train + dev only. Stage 4 touches the test split
-# exactly once, with checkpoints and the decoding rule already frozen.
+# Protocol: stages 1-4 use train + dev only. Stage 5 touches the test split once,
+# with every checkpoint and decoding rule already frozen.
+#
+# Cost on one 48 GB GPU: proposers ~10 min each (3 + 5 runs), verifier ~10-20 min.
 set -euo pipefail
+export PYTHONPATH=.
+SEED=42                   # proposer and verifier seed of the released system
+BASELINE_SEEDS=(42 13 101)
 
-SEEDS=(42 13 101)
-
-echo "=== Stage 1: correctness tests (data contract + official-scorer oracle) ==="
+echo "=== Stage 0: correctness tests (data contract + official-scorer oracle) ==="
 python3 tests/test_contract.py
 
-echo
-echo "=== Stage 2: train the frozen recipe on ${#SEEDS[@]} seeds (train -> dev) ==="
-for SEED in "${SEEDS[@]}"; do
-  python3 -m carve.train -c configs/carve.json --set run_name=carve_s${SEED} seed=${SEED}
+echo "=== Stage 1: CARVE-simple proposers on the full train split ==="
+for S in "${BASELINE_SEEDS[@]}"; do
+  python3 -m carve.train -c configs/proposer.json --set run_name=proposer_s${S} seed=${S}
 done
 
-echo
-echo "=== Stage 3: freeze the decoding rule on DEV ONLY ==="
-# tau / min_len are chosen to maximise the MEAN dev Arg-C IoU across seeds, so
-# the rule is never fitted to whichever seed happens to look best.
-python3 scripts/freeze_rules.py carve
-
-echo
-echo "=== Stage 4: FROZEN single evaluation on TEST (one fixed rule per seed) ==="
-mkdir -p preds
-for SEED in "${SEEDS[@]}"; do
-  echo "--- seed ${SEED}"
-  python3 -m carve.decode --ckpt runs/carve_s${SEED}/best.pt --split test \
-    --rules assets/decoding_rules.json --out preds/test_s${SEED}.jsonl
+echo "=== Stage 2: out-of-fold candidates (5 folds) and dev/test candidates ==="
+for K in 0 1 2 3 4; do
+  python3 scripts/propose.py oof --fold ${K} --seed ${SEED}
 done
+python3 scripts/propose.py eval --seed ${SEED}
 
-echo
-echo "=== Stage 5: result tables and error analysis ==="
-python3 scripts/results_tables.py
-python3 -m carve.analysis --pred preds/test_s13.jsonl --split test
+echo "=== Stage 3: verifier (epoch selected on dev) ==="
+python3 scripts/train_verifier.py --prop_seed ${SEED} --seed ${SEED}
+
+echo "=== Stage 4: freeze both decoding rules on DEV ONLY ==="
+python3 scripts/proposer_baseline.py freeze --seeds "${BASELINE_SEEDS[@]}"
+python3 scripts/freeze_and_test.py freeze --runs verifier_s${SEED}
+
+echo "=== Stage 5: single frozen evaluation on TEST ==="
+python3 scripts/proposer_baseline.py test --seeds "${BASELINE_SEEDS[@]}"
+python3 scripts/freeze_and_test.py test --runs verifier_s${SEED}
+python3 scripts/bootstrap_ci.py --sys "preds/test_verifier_s${SEED}.jsonl" --ref "preds/test_proposer_s${SEED}.jsonl"

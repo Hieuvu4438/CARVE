@@ -1,4 +1,4 @@
-"""Data loading and label construction for CARVE.
+"""Data loading and label construction.
 
 Contract (read-only) with the upstream benchmark:
   third_party/SciEvent/SciEvent_data/ONEIE/all_splits/{train,dev,test}.oneie.json
@@ -13,11 +13,18 @@ The official evaluator (baselines/ONEIE/EM_overlap_eval.py) is
   * trigger-insensitive
   * event-type sensitive
   * excludes {Agent, PrimaryObject, SecondaryObject} from Arg-I / Arg-C
-so we split the span-labelling problem into two nearly disjoint tagging tasks:
-  ROLE head : the 9 scored semantic roles        (97.6% internally non-overlapping)
-  AAO  head : Agent / Action / Primary / Secondary Object, used only for the
-              trigger ROUGE-L tuple              (99.8% internally non-overlapping)
-Cross-group overlap is 5.9%, which is exactly why they cannot share one head.
+
+Two span groups exist: the 9 scored roles, and the <Agent, Action, Object> tuple
+used only for the trigger ROUGE-L metric. The proposer tags both with ONE merged
+13-type BIO inventory (`MERGED_LABELS`). The groups overlap in 5.9 % of windows;
+a controlled ablation showed that separate heads make no measurable difference,
+so the simpler single inventory is used. Where spans conflict, `spans_to_bio`
+keeps the shorter one. The separate `ROLE_*` / `AAO_*` inventories are kept for
+evaluation and tests.
+
+`sent_id` is used only as a join key. Its suffix (`-0`, `-1`, ...) is the event's
+position in the annotation and predicts the gold event type 94-99 % of the time;
+no model input may read it.
 """
 
 import json
