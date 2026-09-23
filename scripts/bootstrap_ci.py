@@ -1,5 +1,5 @@
-"""Paired window bootstrap on test between two systems (default: CARVE-simple +
-HONE vs the CARVE-simple threshold baseline with the same proposer seed).
+"""Paired window bootstrap on test between two systems (default: CLAVE vs
+the CARVE-simple threshold baseline with the same proposer seed).
 
 Resamples the 163 test windows with replacement (the unit of annotation). In
 every replicate the *same* windows are scored for both systems; each side's F1
@@ -18,9 +18,9 @@ import glob
 
 import numpy as np
 
-from carve.data import EXCLUDED_FROM_SCORING
-from carve.evaluate import official_scorer
-from carve.paths import repo_root, split_path
+from clave.data import EXCLUDED_FROM_SCORING
+from clave.evaluate import official_scorer
+from clave.paths import repo_root, split_path
 
 BASELINE = {"arg_c_iou": 41.61, "arg_i_iou": 53.57}   # OneIE, SciEvent paper Table 4
 

@@ -23,9 +23,9 @@ AAO spans and the trigger (used only for ROUGE-L) come from the proposer.
 
 import numpy as np
 
-from carve.candidates import LABELS, iou
-from carve.data import AAO_LABEL2ID, EVENT_TYPES, bio_to_spans
-from carve.evaluate import score, to_oneie_record
+from clave.candidates import LABELS, iou
+from clave.data import AAO_LABEL2ID, EVENT_TYPES, bio_to_spans
+from clave.evaluate import score, to_oneie_record
 
 ID2AAO = {i: l for l, i in AAO_LABEL2ID.items()}
 THETAS = [0.20, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.80]
@@ -136,7 +136,7 @@ def mix_roles(rows, probs_per_window, alpha):
 def role_given_type(train_windows, alpha=1.0):
     """log P(role | event type) from TRAIN gold, add-alpha smoothed. Used by the
     optional joint type decision (H6). Built from training labels only."""
-    from carve.data import ROLE_TYPES
+    from clave.data import ROLE_TYPES
     counts = np.full((len(EVENT_TYPES), len(ROLE_TYPES)), alpha)
     for w in train_windows:
         t = EVENT_TYPES.index(w.event_type)
@@ -147,7 +147,7 @@ def role_given_type(train_windows, alpha=1.0):
 
 def joint_type(type_post, spans, log_r_given_t, lam):
     """argmax_t  log p(t) + lam * sum_i log P(role_i | t)   (lam = 0: unchanged)."""
-    from carve.data import ROLE_TYPES
+    from clave.data import ROLE_TYPES
     score = np.log(np.asarray(type_post) + 1e-9)
     if lam > 0 and spans:
         idx = [ROLE_TYPES.index(r) for _, _, r in spans]

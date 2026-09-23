@@ -11,7 +11,7 @@ import importlib.util
 import json
 import os
 
-from carve.paths import official_scorer_path
+from clave.paths import official_scorer_path
 
 _SPEC_CACHE = {}
 

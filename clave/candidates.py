@@ -27,7 +27,7 @@ import os
 
 import numpy as np
 
-from carve.data import ROLE_TYPES
+from clave.data import ROLE_TYPES
 
 REJECT = "reject"
 LABELS = [REJECT] + list(ROLE_TYPES)          # verifier output space (10 classes)

@@ -24,12 +24,12 @@ import torch
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 
-from carve import candidates as C
-from carve.data import load_split
-from carve.evaluate import score, write_jsonl
-from carve.paths import repo_root, split_path
-from carve.select import ALPHAS, MIN_LENS, NMS_MODES, THETAS, mix_roles, records, role_given_type
-from carve.verifier import MARK_CLOSE, MARK_OPEN, Verifier, VerifierDataset, build_examples, collate
+from clave import candidates as C
+from clave.data import load_split
+from clave.evaluate import score, write_jsonl
+from clave.paths import repo_root, split_path
+from clave.select import ALPHAS, MIN_LENS, NMS_MODES, THETAS, mix_roles, records, role_given_type
+from clave.verifier import MARK_CLOSE, MARK_OPEN, Verifier, VerifierDataset, build_examples, collate
 
 ROOT = repo_root()
 MODEL = "microsoft/deberta-v3-large"

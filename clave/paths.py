@@ -1,6 +1,6 @@
 """Resolution of paths to the SciEvent benchmark.
 
-CARVE treats the benchmark as a read-only dependency. Nothing in this repository
+CLAVE treats the benchmark as a read-only dependency. Nothing in this repository
 modifies it. Two locations are needed:
 
   * the prepared ONEIE-format splits, and
@@ -22,7 +22,7 @@ _SETUP_HINT = (
 
 
 def repo_root() -> Path:
-    """Repository root (the directory containing the ``carve`` package)."""
+    """Repository root (the directory containing the ``clave`` package)."""
     return Path(__file__).resolve().parents[1]
 
 
@@ -41,7 +41,7 @@ def default_data_dir() -> str:
 
 
 def official_scorer_path() -> str:
-    """The benchmark's own scorer, imported verbatim by :mod:`carve.evaluate`."""
+    """The benchmark's own scorer, imported verbatim by :mod:`clave.evaluate`."""
     path = scievent_root() / "baselines" / "ONEIE" / "EM_overlap_eval.py"
     if not path.is_file():
         raise FileNotFoundError(f"Official scorer not found at {path}.\n{_SETUP_HINT}")

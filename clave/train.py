@@ -1,6 +1,6 @@
 """Train the CARVE-simple proposer (stage 1).
 
-    python3 -m carve.train -c configs/proposer.json --set run_name=proposer_s42 seed=42
+    python3 -m clave.train -c configs/proposer.json --set run_name=proposer_s42 seed=42
 
 Checkpoint selection is on dev, under the same calibrated decoding the proposer
 is evaluated with (a confidence threshold swept per epoch), not under argmax.
@@ -19,10 +19,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
-from carve.data import AAO_TYPES, EVENT_TYPE2ID, EVENT_TYPES, MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans, load_split, spans_to_bio
-from carve.evaluate import score, to_oneie_record, write_jsonl
-from carve.model import CarveTagger
-from carve.paths import repo_root, split_path
+from clave.data import AAO_TYPES, EVENT_TYPE2ID, EVENT_TYPES, MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans, load_split, spans_to_bio
+from clave.evaluate import score, to_oneie_record, write_jsonl
+from clave.model import CarveTagger
+from clave.paths import repo_root, split_path
 
 ID2MERGED = {i: l for l, i in MERGED_LABEL2ID.items()}
 
@@ -135,7 +135,7 @@ def predict(model, loader, windows, device, amp_dtype):
 
 
 def records_at(cands, tau, min_len):
-    from carve.decode import apply_decoding_rules
+    from clave.decode import apply_decoding_rules
     return [to_oneie_record(c["sent_id"], c["tokens"], c["etype"],
                             apply_decoding_rules(c["conf"], tau, min_len), c["aao"], c["trig"])
             for c in cands]

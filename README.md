@@ -1,10 +1,11 @@
-# CARVE-simple + HONE
+# CLAVE: Cross-Fitted Clause-Level Argument Verification for Scientific Event Extraction
 
-**Propose-then-verify argument extraction for scientific event extraction.**
-Evaluated on SciEvent (Dong et al., EMNLP 2025).
+**CLAVE** is a propose-then-verify system for argument extraction on SciEvent (Dong et al., EMNLP 2025).
 
-- **Stage 1, CARVE-simple** (the *proposer*): a DeBERTa-v3-large word-level span tagger with a single 13-type BIO head and a window event-type head.
-- **Stage 2, HONE** (*Hard-negative Out-of-fold Neural vErification*): a cross-encoder verifier that keeps, rejects or relabels every candidate span the proposer produces. It is trained on out-of-fold candidates, so it learns from the proposer's real mistakes.
+- **Stage 1, the proposer (CARVE-simple).** A DeBERTa-v3-large word-level span tagger with a single 13-type BIO head and a window event-type head. It proposes every clause-level argument span it decodes, with no threshold.
+- **Stage 2, the verifier (HONE, *Hard-negative Out-of-fold Neural vErification*).** A cross-encoder that keeps, rejects or relabels each candidate span. It is trained on **cross-fitted** (out-of-fold) candidates, so it learns from the proposer's real mistakes.
+
+The name spells out the method: **cl**ause-level **a**rgument **ve**rification, with the verifier trained on cross-fitted candidates.
 
 ## Results (SciEvent test, official scorer)
 
@@ -17,7 +18,7 @@ The decoding rule was frozen on dev before test was touched. The released system
 | OneIE | 73.73 | 79.40 | 72.40 |
 | GPT 5-shot (best in paper) | 73.70 | 78.82 | 75.08 |
 | CARVE-simple (no verifier, 3 seeds) | 84.77 ± 0.43 | 76.15 ± 1.21 | 77.22 ± 0.81 |
-| **CARVE-simple + HONE** | **85.13** | 76.78 | **77.82** |
+| **CLAVE** | **85.13** | 76.78 | **77.82** |
 
 **Argument extraction, IoU > 0.5** (paper Table 4):
 
@@ -29,14 +30,14 @@ The decoding rule was frozen on dev before test was touched. The released system
 | GPT 5-shot | 50.04 | 49.93 | 49.98 | 34.51 | 34.42 | 34.47 |
 | CARVE-simple (no verifier, 3 seeds) | 62.64 ± 0.23 | 55.03 ± 1.08 | 58.58 ± 0.57 | 54.24 ± 0.46 | 47.65 ± 0.65 | 50.73 ± 0.19 |
 | CARVE-simple (no verifier, seed 42) | 62.91 | 54.41 | 58.35 | 54.66 | 47.28 | 50.70 |
-| **CARVE-simple + HONE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
+| **CLAVE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
 
 **Paired window bootstrap** (5,000 resamples of the 163 test windows):
 
 | comparison | Arg-C Δ [95 % CI] | Arg-I Δ [95 % CI] |
 |---|---|---|
-| CARVE-simple + HONE vs OneIE (published aggregate) | +10.75, system CI [47.28, 57.18] | +6.52, system CI [55.12, 64.72] |
-| CARVE-simple + HONE vs CARVE-simple, same seed | +1.66 [−0.14, +3.44] | +1.74 [−0.65, +4.03] |
+| CLAVE vs OneIE (published aggregate) | +10.75, system CI [47.28, 57.18] | +6.52, system CI [55.12, 64.72] |
+| CLAVE vs CARVE-simple, same seed | +1.66 [−0.14, +3.44] | +1.74 [−0.65, +4.03] |
 
 Reading these results:
 
@@ -87,8 +88,8 @@ window ──► CARVE-simple ──► every argmax span of a scored role (no t
 ## Installation
 
 ```bash
-git clone https://github.com/Hieuvu4438/CARVE.git
-cd CARVE
+git clone https://github.com/Hieuvu4438/CLAVE.git
+cd CLAVE
 pip install -e .
 bash scripts/setup_data.sh          # clones SciEvent into third_party/ and runs its own preprocessing
 python3 tests/test_contract.py      # data contract + official-scorer oracle (must print 100.00)
@@ -108,7 +109,7 @@ bash scripts/reproduce.sh
 
 | step | command | output |
 |---|---|---|
-| proposers (seeds 42, 13, 101) | `python3 -m carve.train -c configs/proposer.json --set run_name=proposer_s42 seed=42` | `runs/proposer_s*/` |
+| proposers (seeds 42, 13, 101) | `python3 -m clave.train -c configs/proposer.json --set run_name=proposer_s42 seed=42` | `runs/proposer_s*/` |
 | out-of-fold candidates | `python3 scripts/propose.py oof --fold K --seed 42` (K = 0..4) | `data/cands/oof_k*_s42.jsonl` |
 | dev/test candidates | `python3 scripts/propose.py eval --seed 42` | `data/cands/{dev,test}_s42.jsonl` |
 | verifier | `python3 scripts/train_verifier.py --prop_seed 42 --seed 42` | `runs/verifier_s42/` |
@@ -129,7 +130,7 @@ About 2 GPU-hours on one 48 GB GPU.
 ## Repository layout
 
 ```
-carve/
+clave/
   model.py        CARVE-simple tagger (stage 1)
   train.py        proposer training + dev checkpoint selection
   decode.py       proposer posteriors + threshold decoder (baseline)
@@ -159,7 +160,10 @@ docs/             PAPER_VI.md (write-up), PAPER_NOTES.md (exact method + all num
 
 ## History
 
-This repository previously contained the original CARVE: two BIO heads, event-type conditioning and a calibrated threshold, test Arg-C 50.48 ± 1.15. That code, its ablations and its write-ups are archived in the SciEvent research repository under `method/CARVE-full/`, and remain in this repository's git history.
+This repository was previously named **CARVE** and contained the original CARVE: two BIO heads, event-type conditioning and a calibrated threshold, test Arg-C 50.48 ± 1.15.
+- CLAVE's proposer, CARVE-simple, is that model with the two inert components removed.
+- The old code, its ablations and its write-ups are archived in the SciEvent research repository under `method/CARVE-full/`, and remain in this repository's git history.
+- GitHub redirects the old URL `github.com/Hieuvu4438/CARVE` here.
 
 ## License
 

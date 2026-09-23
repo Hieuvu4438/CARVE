@@ -31,7 +31,7 @@ import json
 import os
 from dataclasses import dataclass, field
 
-from carve.paths import default_data_dir, split_path
+from clave.paths import default_data_dir, split_path
 
 # --- label inventories -------------------------------------------------------
 

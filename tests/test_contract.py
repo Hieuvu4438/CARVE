@@ -10,10 +10,10 @@ import os
 
 import numpy as np
 
-from carve import candidates as C
-from carve.data import MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans, default_data_dir, load_split, spans_to_bio
-from carve.evaluate import score, to_oneie_record
-from carve.select import decode_window
+from clave import candidates as C
+from clave.data import MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans, default_data_dir, load_split, spans_to_bio
+from clave.evaluate import score, to_oneie_record
+from clave.select import decode_window
 
 ID2MERGED = {i: l for l, i in MERGED_LABEL2ID.items()}
 

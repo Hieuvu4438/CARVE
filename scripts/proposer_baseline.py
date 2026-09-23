@@ -17,10 +17,10 @@ import time
 
 from transformers import AutoTokenizer
 
-from carve.data import load_split
-from carve.decode import posteriors, threshold_records
-from carve.evaluate import score, write_jsonl
-from carve.paths import repo_root, split_path
+from clave.data import load_split
+from clave.decode import posteriors, threshold_records
+from clave.evaluate import score, write_jsonl
+from clave.paths import repo_root, split_path
 
 MODEL = "microsoft/deberta-v3-large"
 TAUS = [0.5, 0.6, 0.65, 0.70, 0.75, 0.80, 0.85, 0.88, 0.90, 0.92, 0.95]

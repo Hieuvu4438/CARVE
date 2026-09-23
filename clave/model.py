@@ -20,7 +20,7 @@ import torch
 import torch.nn as nn
 from transformers import AutoConfig, AutoModel
 
-from carve.data import EVENT_TYPES, MERGED_LABELS
+from clave.data import EVENT_TYPES, MERGED_LABELS
 
 
 class AttentionPool(nn.Module):

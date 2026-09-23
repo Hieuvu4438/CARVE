@@ -22,8 +22,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 from transformers import AutoConfig, AutoModel
 
-from carve.candidates import LABEL2ID
-from carve.data import EVENT_TYPES, ROLE_TYPES
+from clave.candidates import LABEL2ID
+from clave.data import EVENT_TYPES, ROLE_TYPES
 
 MARK_OPEN, MARK_CLOSE = "<a>", "</a>"
 N_FEATS = len(ROLE_TYPES) + 8

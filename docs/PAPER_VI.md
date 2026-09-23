@@ -1,4 +1,8 @@
-# CARVE-simple + HONE: Đề xuất rồi thẩm định cho trích xuất luận cứ sự kiện khoa học
+# CLAVE: Cross-Fitted Clause-Level Argument Verification for Scientific Event Extraction
+
+*(CLAVE: Thẩm định luận cứ mức mệnh đề với cross-fitting cho trích xuất sự kiện khoa học)*
+
+**CLAVE** = bộ đề xuất **CARVE-simple** + bộ thẩm định **HONE**. Tên gọi tóm tắt phương pháp: thẩm định (**ve**rification) luận cứ (**a**rgument) ở mức mệnh đề (**cl**ause-level), với bộ thẩm định được huấn luyện trên ứng viên cross-fitted (out-of-fold).
 
 *Bản viết tiếng Việt dạng bài báo. Số liệu chi tiết và nguồn gốc của từng con số nằm ở `docs/PAPER_NOTES.md`.*
 
@@ -15,7 +19,7 @@
 
 **Kết quả trên test** (1 seed, luật giải mã đóng băng trên dev):
 
-| chỉ số | CARVE-simple + HONE | OneIE (tốt nhất về luận cứ trong bài gốc) | GPT 5-shot (tốt nhất về trigger) |
+| chỉ số | CLAVE | OneIE (tốt nhất về luận cứ trong bài gốc) | GPT 5-shot (tốt nhất về trigger) |
 |---|---|---|---|
 | Arg-C IoU F1 | **52.36** | 41.61 | — |
 | Arg-I IoU F1 | **60.09** | 53.57 | — |
@@ -49,7 +53,7 @@ Trong khi đó, nếu có một bộ thẩm định hoàn hảo chạy trên ch�
 
 1. **CARVE-simple.** Một bộ gán nhãn span gọn hơn CARVE: một đầu BIO gộp, không điều kiện hoá theo loại sự kiện. Kết quả tương đương CARVE trên test (50.73 ± 0.19 so với 50.48 ± 1.15; Δ +0.25, khoảng tin cậy [−1.66, +2.12]), và phương sai giữa các seed thấp hơn khoảng 6 lần.
 2. **HONE.** Một bộ thẩm định huấn luyện trên ứng viên out-of-fold. Chúng tôi cho thấy cross-fitting là **bắt buộc**: bỏ đi thì mất 4.3 điểm dev (đo với bộ đề xuất CARVE gốc).
-3. **Hệ thống cuối, CARVE-simple + HONE** (1 seed): 52.36 Arg-C, 60.09 Arg-I, 77.82 ROUGE-L trên test.
+3. **Hệ thống cuối, CLAVE** (1 seed): 52.36 Arg-C, 60.09 Arg-I, 77.82 ROUGE-L trên test.
 4. **Một quy trình báo cáo minh bạch:** mọi lần chạm vào test đều được ghi lại; kiểm toán rò rỉ, kể cả phát hiện về một đặc trưng định danh rò rỉ loại sự kiện (§8); và các giả thuyết bị bác bỏ được báo cáo như kết quả.
 
 ---
@@ -171,7 +175,7 @@ cửa sổ ──► CARVE-simple ──► mọi span argmax thuộc 9 vai trò
 | Qwen (2-shot) | 57.27 | 69.71 | 61.18 |
 | Llama (0-shot) | 54.88 | 61.07 | 55.83 |
 | CARVE-simple (3 seed) | 84.77 ± 0.43 | 76.15 ± 1.21 | 77.22 ± 0.81 |
-| **CARVE-simple + HONE** | **85.13** | 76.78 | **77.82** |
+| **CLAVE** | **85.13** | 76.78 | **77.82** |
 
 ROUGE-L của hệ thống **bằng đúng** của bộ đề xuất: trigger và bộ ba AAO lấy thẳng từ CARVE-simple, không đi qua HONE. Chúng tôi không có dự đoán từng cửa sổ của GPT, nên không kiểm định được ý nghĩa của mức +2.74 so với GPT 5-shot.
 
@@ -185,7 +189,7 @@ ROUGE-L của hệ thống **bằng đúng** của bộ đề xuất: trigger v�
 | GPT (5-shot) | 50.04 | 49.93 | 49.98 | 34.51 | 34.42 | 34.47 |
 | CARVE-simple (3 seed) | 62.64 ± 0.23 | 55.03 ± 1.08 | 58.58 ± 0.57 | 54.24 ± 0.46 | 47.65 ± 0.65 | 50.73 ± 0.19 |
 | CARVE-simple (seed 42) | 62.91 | 54.41 | 58.35 | 54.66 | 47.28 | 50.70 |
-| **CARVE-simple + HONE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
+| **CLAVE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
 | *Δ so với OneIE* | *+19.07* | *−3.76* | *+6.52* | *+21.46* | *+2.07* | *+10.75* |
 
 ### 5.3 Ý nghĩa thống kê
@@ -194,8 +198,8 @@ Bootstrap ghép cặp: 5,000 lần lấy mẫu lại 163 cửa sổ test, hai h�
 
 | so sánh | Arg-C Δ [95% CI] | Arg-I Δ [95% CI] |
 |---|---|---|
-| CARVE-simple + HONE so với CARVE-simple (cùng seed) | +1.66 [−0.14, +3.44] | +1.74 [−0.65, +4.03] |
-| CARVE-simple + HONE so với CARVE gốc (seed 42) | +3.14 [−0.62, +6.83] | **+4.84 [+0.86, +8.83]** |
+| CLAVE so với CARVE-simple (cùng seed) | +1.66 [−0.14, +3.44] | +1.74 [−0.65, +4.03] |
+| CLAVE so với CARVE gốc (seed 42) | +3.14 [−0.62, +6.83] | **+4.84 [+0.86, +8.83]** |
 | CARVE-simple so với CARVE gốc (3 seed mỗi bên) | +0.25 [−1.66, +2.12] | +0.64 [−1.27, +2.46] |
 
 Khoảng tin cậy 95% tuyệt đối của hệ thống: Arg-C [47.28, 57.18], Arg-I [55.12, 64.72]. Cả hai cận dưới đều trên OneIE.
@@ -218,7 +222,7 @@ Precision và recall của từng chế độ có trong PAPER_NOTES §4.3.
 | CARVE gốc (3 seed) | 47.14 ± 0.26 |
 | CARVE-simple (3 seed) | 48.10 ± 0.96 |
 | CARVE-simple (seed 42) | 49.19 |
-| **CARVE-simple + HONE** | **49.16** |
+| **CLAVE** | **49.16** |
 
 ---
 

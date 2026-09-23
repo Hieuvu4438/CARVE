@@ -16,10 +16,10 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from carve.data import AAO_TYPES, EVENT_TYPES, MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans
-from carve.evaluate import to_oneie_record
-from carve.model import CarveTagger
-from carve.train import WindowDataset, collate
+from clave.data import AAO_TYPES, EVENT_TYPES, MERGED_LABEL2ID, ROLE_TYPES, bio_to_spans
+from clave.evaluate import to_oneie_record
+from clave.model import CarveTagger
+from clave.train import WindowDataset, collate
 
 ID2MERGED = {i: l for l, i in MERGED_LABEL2ID.items()}
 

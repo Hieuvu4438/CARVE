@@ -30,10 +30,10 @@ import numpy as np
 import torch
 from transformers import AutoTokenizer
 
-from carve import candidates as C
-from carve.data import AAO_LABEL2ID, AAO_TYPES, MERGED_LABEL2ID, load_split
-from carve.decode import posteriors
-from carve.paths import default_data_dir, repo_root
+from clave import candidates as C
+from clave.data import AAO_LABEL2ID, AAO_TYPES, MERGED_LABEL2ID, load_split
+from clave.decode import posteriors
+from clave.paths import default_data_dir, repo_root
 
 MODEL = "microsoft/deberta-v3-large"
 K_FOLDS = 5
@@ -72,7 +72,7 @@ def write_candidates(ckpt, windows, out, seed):
 
 def mode_eval(seed):
     ck = ROOT / "runs" / f"proposer_s{seed}" / "best.pt"
-    assert ck.exists(), f"missing proposer checkpoint {ck} (train it with carve.train first)"
+    assert ck.exists(), f"missing proposer checkpoint {ck} (train it with clave.train first)"
     for split in ["dev", "test"]:
         print(f"[eval] {split}: ", end="")
         write_candidates(ck, load_split(split), ROOT / "data" / "cands" / f"{split}_s{seed}.jsonl", seed)
@@ -117,7 +117,7 @@ def mode_oof(fold, seed, epochs=None):
     if out.exists():
         print(f"[oof] {out} already exists, skipping")
         return
-    from carve.train import load_config, run
+    from clave.train import load_config, run
     run_name = f"oof_k{fold}_s{seed}"
     cfg = load_config(ROOT / "configs" / "proposer.json")
     cfg.update({"run_name": run_name, "seed": seed, "data_dir": str(fold_dir), "eval_split": "dev",

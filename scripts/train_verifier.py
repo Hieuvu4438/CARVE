@@ -26,12 +26,12 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
-from carve import candidates as C
-from carve.data import load_split
-from carve.evaluate import score
-from carve.paths import repo_root, split_path
-from carve.select import records, tune
-from carve.verifier import MARK_CLOSE, MARK_OPEN, Verifier, VerifierDataset, build_examples, collate
+from clave import candidates as C
+from clave.data import load_split
+from clave.evaluate import score
+from clave.paths import repo_root, split_path
+from clave.select import records, tune
+from clave.verifier import MARK_CLOSE, MARK_OPEN, Verifier, VerifierDataset, build_examples, collate
 
 ROOT = repo_root()
 K_FOLDS = 5

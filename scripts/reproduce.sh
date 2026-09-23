@@ -16,7 +16,7 @@ python3 tests/test_contract.py
 
 echo "=== Stage 1: CARVE-simple proposers on the full train split ==="
 for S in "${BASELINE_SEEDS[@]}"; do
-  python3 -m carve.train -c configs/proposer.json --set run_name=proposer_s${S} seed=${S}
+  python3 -m clave.train -c configs/proposer.json --set run_name=proposer_s${S} seed=${S}
 done
 
 echo "=== Stage 2: out-of-fold candidates (5 folds) and dev/test candidates ==="

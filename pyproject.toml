@@ -3,9 +3,9 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "carve"
+name = "clave"
 version = "2.0.0"
-description = "CARVE-simple + HONE: propose-then-verify argument extraction for scientific event extraction (SciEvent)"
+description = "CLAVE: Cross-Fitted Clause-Level Argument Verification for Scientific Event Extraction (SciEvent)"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/Hieuvu4438/CARVE"
+Repository = "https://github.com/Hieuvu4438/CLAVE"
 
 [tool.setuptools]
-packages = ["carve"]
+packages = ["clave"]

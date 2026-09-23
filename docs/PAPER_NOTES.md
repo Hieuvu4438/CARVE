@@ -1,4 +1,8 @@
-# CARVE-simple + HONE — paper notes
+# CLAVE — paper notes
+
+**Title:** *CLAVE: Cross-Fitted Clause-Level Argument Verification for Scientific Event Extraction.*
+
+CLAVE = the CARVE-simple proposer (stage 1) + the HONE verifier (stage 2). The component names are kept because the development record (SciEvent repository, `method/HONE`) uses them.
 
 Exact method, protocol, and every number with its provenance. Numbers are on
 the official SciEvent split (1,278 / 158 / 163 windows), scored with the
@@ -11,7 +15,7 @@ proposer seed 42 and verifier seed 42 unless stated.
 
 | claim | status | evidence |
 |---|---|---|
-| CARVE-simple + HONE beats the best published baseline (OneIE) on Arg-C and Arg-I IoU | **supported** | test Arg-C 52.36 vs 41.61; the system's own 95 % CI [47.28, 57.18] lies above it (§4.6) |
+| CLAVE beats the best published baseline (OneIE) on Arg-C and Arg-I IoU | **supported** | test Arg-C 52.36 vs 41.61; the system's own 95 % CI [47.28, 57.18] lies above it (§4.6) |
 | … on trigger ROUGE-L vs GPT 5-shot | **point estimate only** | 77.82 vs 75.08; no per-window GPT predictions, so no paired test; ROUGE-L comes from the proposer |
 | HONE improves over its own proposer (CARVE-simple, same seed) | **not established** | Arg-C +1.66, CI [−0.14, +3.44]; dev ≈ 0 (49.16 vs 49.19) |
 | CARVE-simple ≡ original CARVE | **supported (no difference)** | test Δ +0.25, CI [−1.66, +2.12]; lower seed variance (§6.1) |
@@ -31,7 +35,7 @@ proposer seed 42 and verifier seed 42 unless stated.
 
 ## 2. Method
 
-### 2.1 Stage 1 — CARVE-simple proposer (`carve/model.py`, `carve/train.py`, `configs/proposer.json`)
+### 2.1 Stage 1 — CARVE-simple proposer (`clave/model.py`, `clave/train.py`, `configs/proposer.json`)
 
 | component | setting |
 |---|---|
@@ -49,9 +53,9 @@ proposer seed 42 and verifier seed 42 unless stated.
   - a separate AAO head;
   - type conditioning of the role head;
   - optional CRF, span-level role head and LLRD (all rejected earlier; §5).
-- **Two harmless leftovers, kept deliberately:** an unused zero-initialised embedding and one unused random draw per batch. They make training follow the reported run's random stream; see the comment in `carve/model.py`.
+- **Two harmless leftovers, kept deliberately:** an unused zero-initialised embedding and one unused random draw per batch. They make training follow the reported run's random stream; see the comment in `clave/model.py`.
 
-### 2.2 Candidates (`scripts/propose.py`, `carve/candidates.py`)
+### 2.2 Candidates (`scripts/propose.py`, `clave/candidates.py`)
 
 **Extraction:**
 - The proposer decodes the merged posterior by argmax.
@@ -81,7 +85,7 @@ proposer seed 42 and verifier seed 42 unless stated.
 - On matched dev candidates the proposer's own role is right 80.2 % of the time.
 - Oracle verifier over the dev candidates (perfect keep and role, same decoder): **72.20** Arg-C. That is the headroom above the 49.16 achieved.
 
-### 2.3 Stage 2 — HONE verifier (`carve/verifier.py`, `scripts/train_verifier.py`)
+### 2.3 Stage 2 — HONE verifier (`clave/verifier.py`, `scripts/train_verifier.py`)
 
 | component | setting |
 |---|---|
@@ -100,7 +104,7 @@ Training curve on dev, verifier-only rule:
 |---|---|---|---|---|---|
 | dev Arg-C | 37.78 | 46.49 | 46.47 | 45.81 | **46.69** |
 
-### 2.4 Stage 3 — decoding (`carve/select.py`, `scripts/freeze_and_test.py`)
+### 2.4 Stage 3 — decoding (`clave/select.py`, `scripts/freeze_and_test.py`)
 
 - keep(c) = 1 − p(reject | c).
 - role(c) = argmax [α · p_v(role | c)/Σ + (1 − α) · role_mass(c)/Σ].
@@ -133,12 +137,12 @@ Test-look log (all on 2026-09-23 unless stated):
    - its 3 seeds were trained, and its rule was frozen on dev (τ 0.90, min_len 3);
    - it was then evaluated on test once: 50.73 ± 0.19 Arg-C.
 4. **HONE with the original CARVE proposer, single seed:** rule frozen on dev at 18:46:40, test 53.35.
-5. **CARVE-simple + HONE, single seed** (this system):
+5. **CLAVE, single seed** (this system):
    - 5 out-of-fold proposers were trained, then the verifier;
    - rule frozen on dev at **19:31:30**;
    - test predictions written at 19:31:40, i.e. after the freeze;
    - result: test 52.36.
-6. **Selection of the final configuration.** CARVE-simple + HONE was selected as the release configuration after steps 2–5 had been observed on test. It is not the best of them by test score, so the choice did not inflate the reported number. It is nonetheless a post-hoc choice.
+6. **Selection of the final configuration.** CLAVE was selected as the release configuration after steps 2–5 had been observed on test. It is not the best of them by test score, so the choice did not inflate the reported number. It is nonetheless a post-hoc choice.
 
 Throughout:
 - every model, epoch and decoding parameter was chosen on dev;
@@ -163,9 +167,9 @@ Throughout:
 | original CARVE (3 seeds) | 83.85 ± 1.25 | 76.28 ± 0.55 | 76.93 ± 0.80 |
 | CARVE-simple (3 seeds) | 84.77 ± 0.43 | 76.15 ± 1.21 | 77.22 ± 0.81 |
 | CARVE-simple, seed 42 | 85.13 | 76.78 | 77.82 |
-| **CARVE-simple + HONE** | **85.13** | **76.78** | **77.82** |
+| **CLAVE** | **85.13** | **76.78** | **77.82** |
 
-ROUGE-L of CARVE-simple + HONE equals that of its proposer by construction.
+ROUGE-L of CLAVE equals that of its proposer by construction.
 
 ### 4.2 Argument extraction, IoU > 0.5
 
@@ -184,11 +188,11 @@ ROUGE-L of CARVE-simple + HONE equals that of its proposer by construction.
 | original CARVE (3 seeds) | 63.46 ± 2.16 | 53.35 ± 2.98 | 57.95 ± 2.46 | 55.30 ± 1.13 | 46.47 ± 1.74 | 50.48 ± 1.15 |
 | CARVE-simple (3 seeds) | 62.64 ± 0.23 | 55.03 ± 1.08 | 58.58 ± 0.57 | 54.24 ± 0.46 | 47.65 ± 0.65 | 50.73 ± 0.19 |
 | CARVE-simple, seed 42 | 62.91 | 54.41 | 58.35 | 54.66 | 47.28 | 50.70 |
-| **CARVE-simple + HONE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
+| **CLAVE** | **70.18** | 52.53 | **60.09** | **61.15** | 45.78 | **52.36** |
 | Δ vs OneIE | +19.07 | −3.76 | +6.52 | +21.46 | +2.07 | +10.75 |
 | Δ vs CARVE-simple, seed 42 | +7.27 | −1.88 | +1.74 | +6.49 | −1.50 | +1.66 |
 
-Counts for CARVE-simple + HONE:
+Counts for CLAVE:
 - Arg-C: 244 matched / 399 predicted / 533 gold.
 - Arg-I: 280 matched.
 
@@ -218,8 +222,8 @@ Same modes for CARVE-simple, 3-seed mean (ArgC-F1): EM 34.23 ± 1.27, overlap 59
 | original CARVE, 3 seeds | 47.14 ± 0.26 |
 | CARVE-simple, 3 seeds | 48.10 ± 0.96 |
 | CARVE-simple, seed 42 | 49.19 |
-| **CARVE-simple + HONE** | **49.16** |
-| CARVE-simple + HONE, verifier-only rule (α = 1, λ = 0, training-time tuning) | 46.69 |
+| **CLAVE** | **49.16** |
+| CLAVE, verifier-only rule (α = 1, λ = 0, training-time tuning) | 46.69 |
 
 - On dev the verifier does not add to its proposer (49.16 vs 49.19). The test gain (+1.66) is inside sampling noise.
 - **Tie note:** HONE with the original CARVE proposer has exactly the same dev score (49.16). Both runs happen to match 219 of 394 predicted spans against 497 gold. This was checked: each run used its own candidate set (795 vs 792 candidates); it is not a file mix-up.
@@ -228,18 +232,18 @@ Same modes for CARVE-simple, 3-seed mean (ArgC-F1): EM 34.23 ± 1.27, overlap 59
 
 | system vs reference | metric | Δ | 95 % CI | P(Δ > 0) |
 |---|---|---|---|---|
-| CARVE-simple + HONE vs CARVE-simple s42 | Arg-C | +1.66 | [−0.14, +3.44] | 0.962 |
+| CLAVE vs CARVE-simple s42 | Arg-C | +1.66 | [−0.14, +3.44] | 0.962 |
 | | Arg-I | +1.74 | [−0.65, +4.03] | 0.920 |
-| CARVE-simple + HONE vs original CARVE s42 | Arg-C | +3.14 | [−0.62, +6.83] | 0.951 |
+| CLAVE vs original CARVE s42 | Arg-C | +3.14 | [−0.62, +6.83] | 0.951 |
 | | Arg-I | +4.84 | [+0.86, +8.83] | 0.992 |
-| CARVE-simple + HONE vs HONE on original-CARVE proposer (1 seed) | Arg-C | −0.99 | [−4.41, +2.17] | 0.287 |
+| CLAVE vs HONE on original-CARVE proposer (1 seed) | Arg-C | −0.99 | [−4.41, +2.17] | 0.287 |
 | | Arg-I | −0.06 | [−3.72, +3.30] | 0.483 |
 | CARVE-simple (3 seeds) vs original CARVE (3 seeds) | Arg-C | +0.25 | [−1.66, +2.12] | 0.603 |
 | | Arg-I | +0.64 | [−1.27, +2.46] | 0.746 |
 
-Absolute 95 % CIs for CARVE-simple + HONE: Arg-C [47.28, 57.18], Arg-I [55.12, 64.72]. Both lower bounds exceed OneIE (41.61 and 53.57).
+Absolute 95 % CIs for CLAVE: Arg-C [47.28, 57.18], Arg-I [55.12, 64.72]. Both lower bounds exceed OneIE (41.61 and 53.57).
 
-Test event-type accuracy: 88.96 % for both CARVE-simple + HONE and CARVE-simple seed 42. The joint type decision did not change any test window's type.
+Test event-type accuracy: 88.96 % for both CLAVE and CARVE-simple seed 42. The joint type decision did not change any test window's type.
 
 ## 5. Development evidence behind each design decision
 
@@ -266,7 +270,7 @@ Each row is labelled with the configuration it was measured on. Rows marked *ori
 | CARVE-simple, 3 seeds | 50.73 ± 0.19 | 58.58 | this proposer, no verifier |
 | HONE on original-CARVE proposer, 1 seed | 53.35 | 60.15 | +4.13 [+1.57, +6.74] over its own proposer |
 | HONE on 3 pooled original-CARVE proposers, 3 verifiers | 53.06 ± 1.04 | 63.05 ± 0.27 | best Arg-I; a pooled-threshold control without verifier scored 53.87 |
-| **CARVE-simple + HONE, 1 seed** | **52.36** | **60.09** | released |
+| **CLAVE, 1 seed** | **52.36** | **60.09** | released |
 
 ## 7. Audit
 
