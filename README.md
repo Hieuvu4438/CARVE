@@ -90,6 +90,24 @@ Four design decisions, each forced by a measurement:
 Frozen decoding rule: `tau = 0.90`, `min_len = 3`, `merge_gap = 0`
 (see [`assets/decoding_rules.json`](assets/decoding_rules.json)).
 
+> **Two of these four decisions did not survive ablation.** Event-type
+> *conditioning* contributes −0.24 and the two-head split +0.75, both inside seed
+> variance — so both components are **inert**. The oracle diagnostic shows that
+> getting the window type *right* matters (+4.72); it does not show that
+> conditioning the role head on it helps, and we had conflated the two. The 5.9 %
+> cross-group overlap is real, but the architectural inference we drew from it is
+> not supported.
+>
+> We ship the two-head configuration because it is the one that went through the
+> frozen protocol and the audit, and because nothing distinguishes the two
+> statistically. **For new work we recommend the simpler equivalent**, provided as
+> [`configs/carve_simple.json`](configs/carve_simple.json): one merged 13-type BIO
+> head, no conditioning pathway.
+>
+> ```bash
+> python3 -m carve.train -c configs/carve_simple.json --set run_name=simple_s42 seed=42
+> ```
+
 ---
 
 ## Installation
