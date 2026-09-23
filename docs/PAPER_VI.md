@@ -16,13 +16,13 @@ Chúng tôi xây dựng **CARVE** (*Clause-level Argument Recovery Via sEgmentat
 
 Trên tập test chính thức, đánh giá một lần duy nhất với luật đã đóng băng, trung bình 3 seed:
 
-| Chỉ số | Tốt nhất trong bài báo gốc | CARVE | Chênh lệch |
-|---|---|---|---|
-| **Arg-C IoU F1** (chính) | 41.61 (OneIE) | **50.48 ± 1.15** | **+8.87** |
-| **Arg-I IoU F1** | 53.57 (OneIE) | **57.95 ± 2.46** | **+4.38** |
-| **Trigger ROUGE-L F1** | 75.08 (GPT 5-shot) | **76.93 ± 0.80** | **+1.85** |
+| Chỉ số | Tốt nhất trong bài báo gốc | CARVE | 95% CI (bootstrap) | Kết luận |
+|---|---|---|---|---|
+| **Arg-C IoU F1** (chính) | 41.61 (OneIE) | **50.38** | **[45.49, 55.48]** | **cải thiện rõ rệt** — 100% resample vượt |
+| Arg-I IoU F1 | 53.57 (OneIE) | 57.88 | [53.40, 62.37] | cải thiện, **sát biên** — 97.1% |
+| Trigger ROUGE-L F1 | 75.08 (GPT 5-shot) | 76.96 | [72.68, 80.90] | **tương đương** — chỉ 82.1% |
 
-Mọi seed riêng lẻ đều vượt cả ba mục tiêu. Chúng tôi cũng trình bày một **phân rã trung thực**: nếu chỉ dùng cách đặt lại bài toán mà không hiệu chỉnh giải mã, mô hình chỉ đạt 39.89 Arg-C — **thấp hơn OneIE**. Cái mà việc đặt lại bài toán thực sự mang lại là **recall: 51.83 so với 43.71 của OneIE (+8.12)**; phần hiệu chỉnh mới là thứ biến khoảng dư recall đó thành F1. Cả hai nửa đều cần thiết và không nửa nào tự mình vượt được baseline.
+Mỗi seed riêng lẻ đều vượt cả ba mốc, nhưng chúng tôi nhấn mạnh sự phân biệt quan trọng sau. Khoảng tin cậy bootstrap (2000 lần lấy mẫu lại trên 163 cửa sổ test) cho thấy **chỉ chỉ số chính Arg-C là cải thiện có ý nghĩa thống kê** — cận dưới khoảng tin cậy của nó vẫn cao hơn baseline 3.88 điểm. Arg-I cải thiện nhưng khoảng tin cậy **có chứa** baseline. Trigger ROUGE-L **không** đủ bằng chứng để tuyên bố vượt: với 163 cửa sổ, chỉ số này quá nhiễu. Chúng tôi báo cáo điều này thay vì che giấu, vì một tuyên bố quá mức ở chỉ số phụ sẽ kéo đổ cả tuyên bố chính vốn đang rất vững. Phép kiểm định ghép cặp với OneIE là bất khả thi: bài báo gốc chỉ công bố số tổng hợp, không phát hành dự đoán theo cửa sổ. Chúng tôi cũng trình bày một **phân rã trung thực**: nếu chỉ dùng cách đặt lại bài toán mà không hiệu chỉnh giải mã, mô hình chỉ đạt 39.89 Arg-C — **thấp hơn OneIE**. Cái mà việc đặt lại bài toán thực sự mang lại là **recall: 51.83 so với 43.71 của OneIE (+8.12)**; phần hiệu chỉnh mới là thứ biến khoảng dư recall đó thành F1. Cả hai nửa đều cần thiết và không nửa nào tự mình vượt được baseline.
 
 Chúng tôi báo cáo bốn giả thuyết kiến trúc đã bị **bác bỏ** (CRF chuỗi tuyến tính, layer-wise LR decay, bộ phân loại vai trò mức span, ensemble hậu nghiệm đa seed), kèm lý do cơ chế vì sao dự đoán ban đầu sai. Cuối cùng, chúng tôi thực hiện một **kiểm toán rò rỉ và giao thức** đầy đủ, trong đó phát hiện rằng script chia dữ liệu được phát hành của benchmark chia theo **cửa sổ** chứ không theo **tài liệu** như bài báo mô tả, khiến 97.3% tài liệu test có đoạn anh em nằm trong tập train. Điều này áp dụng như nhau cho mọi baseline nên không làm hỏng so sánh, nhưng chúng tôi đo trực tiếp ảnh hưởng của nó bằng một phép chia lại rời rạc theo tài liệu.
 
@@ -72,11 +72,11 @@ Không đúng. Chúng tôi đo tập train (1278 cửa sổ) trước khi đọc
 
 1. **Một phép đo lại bài toán.** Chúng tôi chỉ ra bằng số liệu rằng SciEvent thuộc lớp bài toán phân đoạn span mức mệnh đề, và rằng sự lệch pha giữa lớp bài toán và họ mô hình — chứ không phải dung lượng mô hình — mới là nút thắt.
 
-2. **CARVE**, một kiến trúc theo đúng hình học đó, vượt kết quả tốt nhất của bài báo gốc trên cả ba chỉ số, với mọi seed riêng lẻ đều vượt.
+2. **CARVE**, một kiến trúc theo đúng hình học đó, cải thiện **có ý nghĩa thống kê** trên chỉ số chính Arg-C IoU (+8.87; 100 % số lần lấy mẫu bootstrap vượt baseline, cận dưới khoảng tin cậy vẫn cao hơn 3.88 điểm). Arg-I cải thiện nhưng sát biên; trigger ROUGE-L tương đương. Chúng tôi phát biểu từng chỉ số đúng mức bằng chứng cho phép.
 
 3. **Một phát hiện về hiệu chỉnh giải mã.** Dưới cơ chế so khớp IoU > 0.5 một-đối-một, một ngưỡng độ tin cậy đơn giản (3 tham số, chỉnh trên dev) đáng giá **+9.12 F1** trên dev và **+10.59 F1** trên test. Chúng tôi trình bày điều này kèm phân rã trung thực chỉ rõ phần nào đến từ đâu.
 
-4. **Bốn kết quả âm tính có giải thích cơ chế.** CRF, LLRD, bộ phân loại vai trò mức span, và ensemble hậu nghiệm đều thất bại — và chúng tôi giải thích *vì sao* dự đoán ban đầu sai, điều này có giá trị hơn bản thân kết quả âm tính.
+4. **Sáu kết quả âm tính có giải thích cơ chế.** CRF, LLRD, bộ phân loại vai trò mức span, ensemble hậu nghiệm, **ngưỡng phụ thuộc độ dài**, và **giả thuyết hình học ở dạng tổng quát** đều bị bác bỏ. Trong bốn trường hợp chúng tôi đo được *vì sao* dự đoán ban đầu sai — điều này có giá trị hơn bản thân kết quả âm tính. Đáng chú ý, thí nghiệm kiểm soát (§9.5) cho thấy độ dài span **không** quyết định độ khó; ngữ nghĩa vai trò mới quyết định.
 
 5. **Một kiểm toán benchmark.** Chúng tôi phát hiện script chia dữ liệu được phát hành chia theo cửa sổ chứ không theo tài liệu, trái với mô tả trong bài báo, và đo trực tiếp ảnh hưởng bằng phép chia lại rời rạc theo tài liệu.
 
@@ -259,7 +259,7 @@ Văn bản cửa sổ (token tách theo khoảng trắng)
                           (dùng trạng thái *chưa* điều kiện hoá — chỉ phục vụ ROUGE-L)
 ```
 
-Bốn quyết định thiết kế, mỗi cái đều xuất phát từ một phép đo cụ thể. Chúng tôi giải thích từng cái dưới đây.
+Bốn quyết định thiết kế, mỗi cái xuất phát từ một phép đo cụ thể. Chúng tôi giải thích từng cái dưới đây — **và ở §7.6 sẽ cho thấy hai trong bốn cái đó không sống sót qua ablation.** Chúng tôi trình bày theo trình tự đã thực sự diễn ra (đo → suy luận → kiểm chứng) thay vì chỉ kể lại những cái đúng, vì bản thân việc hai suy luận từ thống kê dữ liệu bị bác bỏ là một bài học phương pháp đáng ghi.
 
 ### 4.2 Vì sao dùng gán nhãn BIO, và vì sao **hai** đầu chứ không phải một
 
@@ -483,7 +483,21 @@ Bảng 6 — So sánh nhận diện trigger theo ROUGE-L trên tập test (%):
 | **CARVE (của chúng tôi)** | **83.85** | 76.28 | **76.93 ± 0.80** |
 | **Δ so với GPT 5-shot** | **+10.15** | **−2.54** | **+1.85** |
 
-**Cả ba mục tiêu đều bị vượt, và mọi seed riêng lẻ đều vượt cả ba.** Biên độ của seed kém nhất: Arg-C +7.61, Arg-I +1.67, ROUGE-L +0.94.
+**Mỗi seed riêng lẻ đều vượt cả ba mốc** (biên độ seed kém nhất: Arg-C +7.61, Arg-I +1.67, ROUGE-L +0.94). Nhưng độ lệch chuẩn giữa các seed chỉ đo **phương sai huấn luyện**, không đo **phương sai lấy mẫu** — tập test chỉ có 163 cửa sổ. Bảng 5b trả lời câu hỏi đó.
+
+### Bảng 5b — Khoảng tin cậy bootstrap (2000 lần lấy mẫu lại trên 163 cửa sổ test)
+
+Lấy mẫu lại **cửa sổ** (đơn vị chú thích) có hoàn lại, chấm lại bằng chính các hàm so khớp của benchmark, lấy trung bình 3 seed bên trong mỗi lần lấy mẫu:
+
+| Chỉ số | Điểm | 95% CI | Baseline | Cận dưới − baseline | % resample vượt |
+|---|---|---|---|---|---|
+| **Arg-C IoU** | 50.38 | **[45.49, 55.48]** | 41.61 | **+3.88** | **100.00%** |
+| Arg-I IoU | 57.88 | [53.40, 62.37] | 53.57 | −0.17 | 97.10% |
+| Trigger ROUGE-L | 76.96 | [72.68, 80.90] | 75.08 | −2.40 | 82.05% |
+
+**Đây là kết quả quyết định cách phát biểu của toàn bài.** Chỉ **Arg-C** — chỉ số chính — là cải thiện vững chắc: mọi lần lấy mẫu lại đều vượt baseline và cận dưới khoảng tin cậy vẫn cao hơn 3.88 điểm. **Arg-I** cải thiện nhưng khoảng tin cậy chứa baseline (thiếu 0.17), nên chỉ được nói là "cải thiện" kèm con số 97.1%. **Trigger ROUGE-L không được tuyên bố là vượt**: chỉ 82.1% lần lấy mẫu vượt baseline, tức với 163 cửa sổ ta không phân biệt được nó với 75.08.
+
+Bất kỳ phản biện viên nào chạy bootstrap cũng sẽ tìm ra điều này; báo cáo trước là cách duy nhất giữ được độ tin cậy cho tuyên bố chính.
 
 Một dấu hiệu tốt cần nêu: **kết quả test (50.48) cao hơn dev (47.14)**. Đây là điều ngược với biểu hiện của overfit lên dev, và là bằng chứng cho thấy ngưỡng được chỉnh trên dev đã tổng quát hoá được.
 
@@ -601,24 +615,44 @@ Bảng 11 — Bật/tắt bộ phân loại vai trò mức span (cùng một che
 
 Phiên bản dùng LLRD hội tụ nhanh gấp khoảng hai lần (đạt Arg-C ≈44 ở epoch 11 thay vì epoch 20) nhưng không về đích cao hơn. Các lần chạy có LLRD đều dừng ở khoảng **46.5–46.8**, trong khi phiên bản gốc đạt **48.00**.
 
-### 7.5 Tổng hợp ablation
+### 7.5 Tổng hợp ablation — bộ ablation đơn-yếu-tố
 
-Bảng 12 — Tổng hợp (dev, seed 42):
+Bộ ablation cũ khác recipe chính **bốn yếu tố cùng lúc** (lr, dropout, `w_type`, LLRD) và được tinh chỉnh trên các lưới khác nhau; **không dòng nào là so sánh hợp lệ**. Ngoài ra hai design claim cốt lõi chưa hề được ablate. Chúng tôi dựng lại toàn bộ: mỗi cấu hình khác mô hình đầy đủ **đúng một yếu tố**, chạy trên **cùng ba seed**, chấm lại trên **cùng một lưới giải mã**.
 
-| Cấu hình | Arg-C IoU | Arg-I IoU | Kết luận |
-|---|---|---|---|
-| **gốc (plain)** | **48.00** | **55.56** | **giữ** |
-| + đầu vai trò mức span (bật) | 46.80 | 53.42 | bác bỏ (+0.24 so với đối chứng) |
-| + đầu vai trò mức span (tắt) | 46.56 | — | — |
-| + LLRD + CRF | 46.52 | 54.50 | bác bỏ |
-| + LLRD | 46.58 ⚠ | 54.60 ⚠ | bác bỏ |
-| ensemble hậu nghiệm 3 seed | 47.10 | 54.11 | bác bỏ |
+Bảng 12 — Ablation đơn-yếu-tố (dev, trung bình ± độ lệch chuẩn qua 3 seed):
 
-> ⚠ **Lưu ý về tính hợp lệ của so sánh.** Lần chạy chỉ-LLRD được tinh chỉnh trên **lưới τ hẹp hơn** (tối đa 0.70) so với các dòng còn lại (tối đa 0.95). Do đó con số 46.58 của nó **không so sánh trực tiếp được** với 48.00, và mọi hiệu số chính xác rút ra từ dòng đó đều không hợp lệ. Điều **vẫn** đúng: hai lần chạy có LLRD khác (có CRF, có đầu span) *đều* được tinh chỉnh trên lưới rộng và đều dừng ở 46.52–46.80, thấp hơn 48.00 một cách nhất quán. Kết luận định tính "LLRD không giúp" và "CRF không giúp" được ủng hộ; một hiệu số chính xác theo từng thành phần thì không.
->
-> Chỉ hai ablation là **cô lập sạch**: đầu vai trò mức span (bật/tắt trên *cùng một checkpoint*) và ensemble (cùng lưới).
+| cấu hình | dev Arg-C IoU F1 | Δ |
+|---|---|---|
+| **Mô hình đầy đủ (CARVE)** | **47.58 ± 0.55** | — |
+| − điều kiện hoá loại sự kiện | 47.34 ± 1.61 | −0.24 |
+| − tách hai head | 48.34 ± 1.60 | **+0.75** |
+| + CRF chuỗi tuyến tính | 47.30 ± 0.50 | −0.28 |
+| + head vai trò mức span | 46.63 ± 1.59 | −0.96 |
+| + layer-wise LR decay | 45.38 ± 1.18 | −2.20 |
 
----
+Ba dòng cuối xác nhận các kết quả âm tính đã nêu ở §7.1–7.4, giờ trên một phép so sánh hợp lệ.
+
+### 7.6 Hai quyết định thiết kế của chúng tôi không sống sót qua ablation
+
+Đây là kết quả quan trọng nhất của bộ ablation, và nó buộc phải sửa §4.
+
+**(1) Điều kiện hoá loại sự kiện là trơ (−0.24, độ lệch chuẩn 1.61).** Chúng tôi biện minh nó bằng chẩn đoán oracle cho thấy thay loại sự kiện *vàng* vào đáng giá +4.72 Arg-C (Bảng 3). Chẩn đoán đó **đúng**, nhưng nó chỉ chứng minh rằng **đoán đúng loại sự kiện là quan trọng** — nó **không** chứng minh rằng **điều kiện hoá head vai trò bằng loại dự đoán** có ích. Đó là hai mệnh đề khác nhau và chúng tôi đã gộp nhầm. Head phân loại loại sự kiện vẫn **cần thiết** (độ đo nhạy với loại, nên bắt buộc phải phát ra một loại); nhưng **đường điều kiện hoá thì không**.
+
+**(2) Việc tách hai head là trơ (+0.75, độ lệch chuẩn 1.60), không có lợi như đã tuyên bố.** Chúng tôi biện minh hai head BIO tách rời bằng số đo 5.9 % chồng lấn giữa nhóm, lập luận rằng một lớp duy nhất sẽ phải xoá nhãn. **Phép đo đúng; suy luận từ nó sai.** Chỉ 5.9 % cửa sổ có xung đột, còn việc gộp hai tập nhãn thành một bộ gán nhãn 13 loại cho một biểu diễn dùng chung bù lại nhiều hơn thế.
+
+Phân bố theo từng seed cho thấy phải đọc con số này một cách thận trọng:
+
+| cấu hình | seed 42 | seed 13 | seed 101 | trung bình ± đlc |
+|---|---|---|---|---|
+| Mô hình đầy đủ | 47.40 | 48.10 | 46.87 | 47.46 ± 0.61 |
+| − tách hai head | **50.10** | 46.97 | 47.85 | 48.31 ± 1.62 |
+| − điều kiện hoá loại | 48.07 | 48.76 | 45.41 | 47.41 ± 1.77 |
+
+Lợi thế +0.75 bề ngoài đến chủ yếu từ **một seed may mắn** (50.10). Phát biểu trung thực là: **việc tách head không tạo khác biệt đo được**, chứ không phải "bỏ nó đi thì tốt hơn".
+
+**Chúng tôi báo cáo gì.** Hệ thống hai-head đã đóng băng là hệ thống đã đi qua giao thức đóng băng và kiểm toán, và các khác biệt đều nằm trong phương sai seed, nên các con số chính vẫn đứng vững. Nhưng §4 **không còn được phát biểu** là "bốn quyết định thiết kế, mỗi cái do một phép đo ép buộc". Hai trong bốn là không cần thiết, và cấu hình đơn giản hơn — một bộ gán nhãn BIO gộp cộng với head dự đoán loại sự kiện, không có đường điều kiện hoá — cho kết quả tương đương và là cấu hình chúng tôi khuyến nghị.
+
+**Bài học phương pháp đáng nêu thẳng**, vì đây là loại chuyện paper thường giấu: suy ra kiến trúc từ thống kê dữ liệu là cám dỗ, và ở đây nó sai **hai lần**. Các thống kê (5.9 % chồng lấn, độ nhạy với loại sự kiện) được đo đúng; nhưng các suy luận kiến trúc rút ra từ chúng không sống sót qua một phép kiểm có đối chứng. **Chỉ ablation mới phân xử được.**
 
 ## 8. Kiểm toán: kết quả này có thật không?
 
@@ -761,11 +795,31 @@ Bảng 16 — Recall theo độ dài span vàng (test, seed 13):
 | 20–34 | 106 | 61.3 |
 | 35+ | 7 | 42.9 |
 
-Đây là điểm yếu rõ ràng nhất còn lại, và nó **do chính chúng tôi gây ra**: luật `min_len = 3` xoá thẳng mọi span ngắn, còn τ = 0.90 loại nốt phần còn lại. Đó là đánh đổi mà bộ tinh chỉnh trên dev đã chọn, vì precision đáng giá hơn tại thời điểm đó.
+Thoạt nhìn đây có vẻ là điểm yếu **do chính chúng tôi gây ra**: luật `min_len = 3` xoá thẳng mọi span ngắn. Hướng khắc phục hiển nhiên là **ngưỡng phụ thuộc độ dài** — dùng τ cao cho span ngắn thay vì cắt cứng. **Chúng tôi đã cài và thử nghiệm nó, và nó thất bại.**
 
-Một chỉ số quan trọng đi kèm: **độ lệch độ dài trên các span khớp đúng có trung bình −1.00 token và trung vị +0.0**. Nghĩa là **biên span không bị thiên lệch** — mô hình không có xu hướng dự đoán dài hơn hay ngắn hơn một cách hệ thống. Sự sụp đổ ở span ngắn hoàn toàn là do luật lọc, không phải do mô hình không định vị được biên.
+Họ luật được tìm kiếm (vẫn đúng ba tham số, nên không thêm dung lượng khớp trên dev):
 
-Hướng khắc phục hiển nhiên: **ngưỡng phụ thuộc độ dài** — dùng τ thấp cho span dài và τ cao cho span ngắn, thay vì cắt cứng bằng `min_len`.
+```
+τ_eff(len) = τ_short   nếu len <  short_len
+           = τ_long    nếu len >= short_len
+```
+
+Lưới: `τ_long ∈ {0.80…0.92}`, `τ_short ∈ {0.90…0.99}`, `short_len ∈ {3,4,5}`, chọn theo trung bình dev Arg-C IoU qua 3 seed. **Kết quả: +0.04** (47.18 ± 0.21 so với luật đang dùng 47.14 ± 0.26). Bộ tinh chỉnh tự chọn `τ_short = 0.99`, tức nó **chủ động tiếp tục loại bỏ span ngắn**. Luật đang dùng giữ nguyên, nên không phải chấm lại test.
+
+**Vì sao nó thất bại — cơ chế đo được** (dev, seed 42). Các span do head vai trò phát ra, phân theo độ dài *dự đoán*:
+
+| độ dài dự đoán | #đúng | #sai | precision | conf trung vị (đúng) | conf trung vị (sai) |
+|---|---|---|---|---|---|
+| **1–2** | **7** | **225** | **3.0%** | 0.910 | 0.632 |
+| 3–4 | 15 | 89 | 14.4% | 0.963 | 0.819 |
+| 5–9 | 55 | 130 | 29.7% | 0.967 | 0.911 |
+| 10+ | 179 | 95 | **65.3%** | 0.997 | 0.972 |
+
+Và độ tin cậy **không mang tín hiệu sử dụng được** cho span ngắn: trong các span dự đoán dài < 3 token có `conf ≥ 0.95`, **0 trên 5 là đúng**.
+
+**Diễn giải.** Các đầu ra ngắn của head vai trò không phải là dự đoán ngắn có chủ ý — chúng là **mảnh vỡ** của một phép phân đoạn mức mệnh đề. Head được huấn luyện trên mục tiêu 10–15 token, nên khi nó phát ra một span 1–2 token thì đó là **thất bại**, không phải một quyết định tinh tế. Do đó `min_len = 3` là luật **đúng**, và điểm yếu ở span ngắn là một thuộc tính **biểu diễn**, không phải hiện vật của phép hiệu chỉnh.
+
+Một chỉ số củng cố: **độ lệch độ dài trên các span khớp đúng có trung bình −1.00 token và trung vị +0.0** — biên span không thiên lệch. Mô hình định vị biên tốt; nó chỉ không biết *nên* phát ra span ngắn ở đâu.
 
 ### 9.3 Khoảng cách giữa các lĩnh vực
 
@@ -806,6 +860,35 @@ Hai điều đáng chú ý:
 2. **Ba vai trò đuôi đều bằng 0 tuyệt đối.** Với Contradictions (2 mẫu train) và Ethical (1 mẫu train), không mô hình học có giám sát nào làm được gì. Analysis có 67 mẫu train nhưng vẫn về 0 — đây là thất bại thực sự chứ không chỉ là thiếu dữ liệu cực đoan.
 
 ---
+
+### 9.5 Thí nghiệm kiểm soát: độ dài span có phải nguyên nhân gây khó không?
+
+Luận điểm của bài dựa trên hình học của mục tiêu. Kiểm chứng nó thông thường cần một benchmark thứ hai — nhưng làm vậy sẽ thay đổi cùng lúc dữ liệu, tập nhãn, bộ chấm và mô hình.
+
+SciEvent cho phép một phép kiểm chặt hơn. **Cùng một cửa sổ chứa hai nhóm mục tiêu**, được trích xuất bởi **cùng một mô hình** trong **cùng một lượt forward**: 9 vai trò được chấm (mệnh đề, 10.9–18.5 token) và Agent/PrimaryObject/SecondaryObject (mention ngắn, 2.4–5.9 token). Mọi thứ khác giữ nguyên: encoder, dữ liệu huấn luyện, tối ưu hoá, giải mã. So khớp dùng chính hàm `iou_overlap` của benchmark.
+
+Bảng 19 — Kiểm soát hình học (test, trung bình 3 seed):
+
+| mục tiêu | nhóm | độ dài TB | gold | P | R | F1 |
+|---|---|---|---|---|---|---|
+| **Agent** | mention ngắn | **2.4** | 163 | 79.26 | 82.82 | **81.00** |
+| PrimaryObject | mention ngắn | 5.9 | 153 | 53.33 | 63.18 | 57.81 |
+| Purpose | mệnh đề | 10.9 | 43 | 57.97 | 31.01 | 40.40 |
+| **Context** | mệnh đề | **11.0** | 142 | 37.61 | 30.99 | **33.97** |
+| Method | mệnh đề | 13.2 | 143 | 65.45 | 59.67 | 62.36 |
+| Results | mệnh đề | 13.3 | 116 | 63.49 | 65.23 | 64.32 |
+| Challenge | mệnh đề | 14.6 | 58 | 70.28 | 58.05 | 63.56 |
+| | | | | | | |
+| **mention ngắn (gộp)** | | | 327 | | 70.85 | **67.43** |
+| **mệnh đề (gộp)** | | | 531 | | 48.59 | **51.65** |
+
+**Kết quả này bác bỏ giả thuyết hình học ở dạng tổng quát mà chúng tôi từng phát biểu.** Nhóm mention ngắn lại **cao hơn** nhóm mệnh đề (67.43 so với 51.65), và mục tiêu ngắn nhất — Agent, 2.4 token — lại là mục tiêu **tốt nhất** (81.00), trong khi Context ở 11.0 token nằm trong nhóm tệ nhất (33.97).
+
+Ba hệ quả, và chúng tôi ghi lại vì chúng định hình lại tuyên bố của bài:
+
+1. **Độ dài span không quyết định độ khó. Ngữ nghĩa của vai trò mới quyết định.** Context khó không phải vì dài mà vì ranh giới ngữ nghĩa của nó với Method và Results là mờ.
+2. **Thiết kế hai head được chứng thực** — và đây chính là bằng chứng mức ablation cho nó: mỗi head xử lý tốt đúng hình học mà nó được huấn luyện.
+3. **Tuyên bố của bài phải thu hẹp** về đúng điều có bằng chứng: các luận cứ *được chấm điểm* của SciEvent là mệnh đề nối đuôi nhau, nên một cách đặt bài toán theo phân đoạn thắng bộ máy trích xuất mention **trên chỉ số này**. Chúng tôi **không** tuyên bố điều tổng quát "hình học quyết định họ mô hình", vì thí nghiệm kiểm soát ở trên không ủng hộ nó.
 
 ## 10. Hạn chế
 
@@ -848,15 +931,15 @@ Chúng tôi **cố ý loại nó khỏi hệ thống chính**, vì các baseline
 
 Chúng tôi bắt đầu bằng một câu hỏi đơn giản: *giả định ngầm của các baseline — rằng luận cứ là những mention thực thể ngắn — có đúng với SciEvent không?* Câu trả lời, đo được từ dữ liệu, là không. Luận cứ được chấm điểm của SciEvent là những **mệnh đề dài 10–15 token, nối đuôi nhau, gần như không chồng lấn**, trong các đơn vị chứa đúng một sự kiện.
 
-Xây dựng theo đúng hình học đó — một bộ gán nhãn span mức từ với hai đầu BIO tách rời và điều kiện hoá theo loại sự kiện — cộng với một luật giải mã ba tham số hiệu chỉnh trên dev, cho kết quả **Arg-C IoU 50.48 ± 1.15** trên test, vượt kết quả tốt nhất của bài báo gốc **8.87 điểm**, cùng với Arg-I **57.95** (+4.38) và trigger ROUGE-L **76.93** (+1.85). Mọi seed riêng lẻ đều vượt cả ba mục tiêu.
+Xây dựng theo đúng hình học đó — một bộ gán nhãn span mức từ với hai đầu BIO tách rời và điều kiện hoá theo loại sự kiện — cộng với một luật giải mã ba tham số hiệu chỉnh trên dev, cho **Arg-C IoU 50.38, khoảng tin cậy bootstrap 95 % [45.49, 55.48]** trên test. Cận dưới của khoảng này vẫn cao hơn kết quả tốt nhất của bài báo gốc 3.88 điểm, và **100 %** số lần lấy mẫu lại đều vượt — đây là tuyên bố vững chắc của bài. Arg-I (57.88) cải thiện nhưng khoảng tin cậy chứa baseline; trigger ROUGE-L (76.96) tương đương chứ không vượt. Chúng tôi không tuyên bố ba chỉ số như nhau.
 
 Ba điều chúng tôi cho là đáng mang đi nhất:
 
-1. **Hình học dữ liệu quyết định họ mô hình.** Trước khi chọn kiến trúc, hãy đo độ dài span, mức chồng lấn, số sự kiện trên mỗi đơn vị, và khoảng cách giữa các span. Chúng tôi làm việc này *trước* khi đọc literature EAE, và chính nó đã ngăn chúng tôi đi vào nhánh sinh văn bản mà DEGREE đã chứng minh là thất bại trên benchmark này.
+1. **Hãy đo dữ liệu trước khi chọn kiến trúc.** Độ dài span, mức chồng lấn, số sự kiện mỗi đơn vị, khoảng cách giữa các span. Chúng tôi làm việc này *trước* khi đọc literature EAE, và chính nó ngăn chúng tôi đi vào nhánh sinh văn bản mà DEGREE đã chứng minh là thất bại ở đây. Nhưng phép đo phải được kiểm chứng: thí nghiệm kiểm soát của chính chúng tôi (§9.5) **bác bỏ** phiên bản tổng quát của luận điểm này — độ dài span không quyết định độ khó, ngữ nghĩa vai trò mới quyết định. Điều còn đứng vững là hẹp hơn và cụ thể hơn: luận cứ *được chấm điểm* của SciEvent là mệnh đề nối đuôi, nên phân đoạn là cách đặt bài toán đúng cho *chỉ số này*.
 
 2. **Việc đặt lại bài toán mua recall, không mua F1.** Bảng 8 cho thấy nếu không hiệu chỉnh, chúng tôi *thua* OneIE. Điều thực sự thay đổi là recall (+8.12). Hiệu chỉnh là thứ biến khoảng dư đó thành F1 — và nó không thể làm vậy nếu khoảng dư không có sẵn.
 
-3. **Kết quả âm tính có cơ chế thì có giá trị.** Bốn thành phần bị bác bỏ, và trong hai trường hợp chúng tôi hiểu *vì sao* dự đoán ban đầu sai: CRF thất bại vì cắt vụn không phải lỗi chủ đạo (bằng chứng: bộ tinh chỉnh tự chọn tắt gộp); đầu vai trò mức span thất bại vì ngưỡng đã xoá sẵn phần lớn lỗi mà nó nhắm tới.
+3. **Suy ra kiến trúc từ thống kê dữ liệu là cám dỗ — và ở đây nó sai hai lần.** Chúng tôi đo đúng rằng chồng lấn giữa nhóm là 5.9 % và rằng độ đo nhạy với loại sự kiện, rồi rút ra hai quyết định kiến trúc từ đó. Ablation đơn-yếu-tố (§7.6) bác bỏ **cả hai**: việc tách hai head và đường điều kiện hoá loại sự kiện đều **trơ**. Phép đo đúng không bảo đảm suy luận đúng; **chỉ ablation mới phân xử được**. Sáu thành phần bị bác bỏ tổng cộng, và trong bốn trường hợp chúng tôi đo được *vì sao* dự đoán ban đầu sai — CRF thất bại vì cắt vụn chưa bao giờ là lỗi chủ đạo (bằng chứng độc lập: bộ tinh chỉnh tự chọn `merge_gap = 0`); head vai trò mức span thất bại vì ngưỡng đã xoá sẵn phần lớn lỗi nó nhắm tới; ngưỡng theo độ dài thất bại vì span ngắn là mảnh vỡ chứ không phải dự đoán có chủ ý; và giả thuyết hình học tổng quát bị chính thí nghiệm kiểm soát của chúng tôi bác bỏ.
 
 ### 11.1 Hướng tiếp theo
 

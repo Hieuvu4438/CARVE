@@ -54,8 +54,14 @@ def to_oneie_record(sent_id, tokens, event_type, role_spans, aao_spans, trigger_
     }
 
 
-def score(pred_records, gold_path):
-    """Return the full official metric dict for a list of prediction records."""
+def score(pred_records, gold_path, with_rouge=True):
+    """Return the full official metric dict for a list of prediction records.
+
+    `with_rouge=False` skips the ROUGE-L block. That block is independent of the
+    decoding threshold (the AAO head is never thresholded), so recomputing it at
+    every point of a tau/min_len grid is pure waste. The default is unchanged, so
+    every reported number comes from the full computation.
+    """
     M = official_scorer()
     gold_data = M.load_jsonl(gold_path)
     tokens = {e["sent_id"]: e["tokens"] for e in gold_data}
@@ -70,8 +76,9 @@ def score(pred_records, gold_path):
     t_all = [tokens[s] for s in sent_ids]
 
     res = {}
-    rp, rr, rf = M.compute_rougeL_overall(g_all, p_all, t_all, sent_ids)
-    res["trigger_rougeL"] = {"p": rp * 100, "r": rr * 100, "f1": rf * 100}
+    if with_rouge:
+        rp, rr, rf = M.compute_rougeL_overall(g_all, p_all, t_all, sent_ids)
+        res["trigger_rougeL"] = {"p": rp * 100, "r": rr * 100, "f1": rf * 100}
 
     matchers = {
         "exact": None,
@@ -96,6 +103,9 @@ def score(pred_records, gold_path):
                                 "matched": argi[3], "pred": argi[4], "gold": argi[5]}
         res[f"arg_c_{name}"] = {"p": argc[0] * 100, "r": argc[1] * 100, "f1": argc[2] * 100,
                                 "matched": argc[3], "pred": argc[4], "gold": argc[5]}
+
+    if not with_rouge:
+        return res
 
     res["rolewise_iou"] = {
         r: dict(v) for r, v in M.compute_rolewise_f1_dual(pred_roles, gold_roles, overlap_fn=M.iou_overlap).items()

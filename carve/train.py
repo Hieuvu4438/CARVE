@@ -15,6 +15,10 @@ from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
 
 from carve.data import (
+    AAO_TYPES,
+    MERGED_LABEL2ID,
+    MERGED_LABELS,
+    MERGED_TYPES,
     AAO_LABEL2ID,
     AAO_LABELS,
     EVENT_TYPE2ID,
@@ -32,6 +36,7 @@ from carve.paths import repo_root, split_path
 
 ID2ROLE = {i: l for l, i in ROLE_LABEL2ID.items()}
 ID2AAO = {i: l for l, i in AAO_LABEL2ID.items()}
+ID2MERGED = {i: l for l, i in MERGED_LABEL2ID.items()}
 
 
 def set_seed(s):
@@ -69,6 +74,7 @@ class WindowDataset(Dataset):
         word_valid = [1 if j in first_sub else 0 for j in range(n_words)]
         role_y = spans_to_bio(w.role_spans, n_words, ROLE_LABEL2ID)
         aao_y = spans_to_bio(w.aao_spans, n_words, AAO_LABEL2ID)
+        merged_y = spans_to_bio(list(w.role_spans) + list(w.aao_spans), n_words, MERGED_LABEL2ID)
         return {
             "input_ids": enc["input_ids"],
             "attention_mask": enc["attention_mask"],
@@ -76,6 +82,7 @@ class WindowDataset(Dataset):
             "word_valid": word_valid,
             "role_y": role_y,
             "aao_y": aao_y,
+            "merged_y": merged_y,
             "type_y": EVENT_TYPE2ID[w.event_type],
             "idx": i,
         }
@@ -92,6 +99,7 @@ def collate(batch, pad_id):
         "word_mask": torch.zeros((B, W), dtype=torch.float),
         "role_y": torch.full((B, W), -100, dtype=torch.long),
         "aao_y": torch.full((B, W), -100, dtype=torch.long),
+        "merged_y": torch.full((B, W), -100, dtype=torch.long),
         "type_y": torch.zeros(B, dtype=torch.long),
         "idx": torch.zeros(B, dtype=torch.long),
     }
@@ -101,13 +109,11 @@ def collate(batch, pad_id):
         out["attention_mask"][i, :l] = torch.tensor(b["attention_mask"])
         out["word_index"][i, :w] = torch.tensor(b["word_index"])
         out["word_mask"][i, :w] = torch.tensor(b["word_valid"], dtype=torch.float)
-        ry = torch.tensor(b["role_y"])
-        ay = torch.tensor(b["aao_y"])
         wv = torch.tensor(b["word_valid"], dtype=torch.bool)
-        ry[~wv] = -100
-        ay[~wv] = -100
-        out["role_y"][i, :w] = ry
-        out["aao_y"][i, :w] = ay
+        for key in ("role_y", "aao_y", "merged_y"):
+            y = torch.tensor(b[key])
+            y[~wv] = -100
+            out[key][i, :w] = y
         out["type_y"][i] = b["type_y"]
         out["idx"][i] = b["idx"]
     return out
@@ -165,7 +171,12 @@ def predict(model, loader, windows, device, amp_dtype, tau=0.0, min_len=1, merge
                         return_states=use_sr)
         tl, rl, al = fwd[0], fwd[1], fwd[2]
         tp = tl.float().argmax(-1).cpu()
-        if getattr(model, "use_crf", False):
+        single = getattr(model, "single_head", False)
+        if single:
+            rprob = torch.softmax(rl.float(), -1).cpu().numpy()
+            aprob = rprob
+            rpath = apath = None
+        elif getattr(model, "use_crf", False):
             rprob = model.role_crf.marginals(rl, b["word_mask"]).cpu().numpy()
             aprob = model.aao_crf.marginals(al, b["word_mask"]).cpu().numpy()
             rpath = model.role_crf.decode(rl, b["word_mask"])
@@ -182,12 +193,18 @@ def predict(model, loader, windows, device, amp_dtype, tau=0.0, min_len=1, merge
             r_ids = rpath[j][:nv] if rpath is not None else rprob[j, :nv].argmax(-1).tolist()
             a_ids = apath[j][:nv] if apath is not None else aprob[j, :nv].argmax(-1).tolist()
 
-            role_spans = bio_to_spans(r_ids, ID2ROLE)
+
+            if single:
+                merged = bio_to_spans(r_ids, ID2MERGED)
+                role_spans = [x for x in merged if x[2] in ROLE_TYPES]
+                aao_spans = [x for x in merged if x[2] in AAO_TYPES]
+            else:
+                role_spans = bio_to_spans(r_ids, ID2ROLE)
+                aao_spans = bio_to_spans(a_ids, ID2AAO)
             if use_sr and role_spans:
                 sl = model.span_roles(fwd[3], [(j, s_, e_) for s_, e_, _ in role_spans])
                 new_roles = sl.float().argmax(-1).cpu().tolist()
                 role_spans = [(s_, e_, ROLE_TYPES[k]) for (s_, e_, _), k in zip(role_spans, new_roles)]
-            aao_spans = bio_to_spans(a_ids, ID2AAO)
             etype = EVENT_TYPES[int(tp[j])]
             type_correct += int(etype == w.event_type)
             trig = next(((s, e) for s, e, t in aao_spans if t == "Action"), (0, min(1, n)))
@@ -225,11 +242,16 @@ def run(cfg):
     tr_dl = DataLoader(tr_ds, batch_size=cfg["batch_size"], shuffle=True, collate_fn=coll, num_workers=2, drop_last=False)
     dv_dl = DataLoader(dv_ds, batch_size=cfg["eval_batch_size"], shuffle=False, collate_fn=coll, num_workers=2)
 
+    single_head = cfg.get("single_head", False)
     model = CarveModel(
-        cfg["model_name"], len(ROLE_LABELS), len(AAO_LABELS), len(EVENT_TYPES),
+        cfg["model_name"],
+        len(MERGED_LABELS) if single_head else len(ROLE_LABELS),
+        len(AAO_LABELS), len(EVENT_TYPES),
         dropout=cfg["dropout"],
         use_crf=cfg.get("use_crf", False),
         use_span_role=cfg.get("use_span_role", False),
+        use_type_cond=cfg.get("use_type_cond", True),
+        single_head=cfg.get("single_head", False),
     ).to(device)
 
     opt = torch.optim.AdamW(param_groups(model, cfg), weight_decay=cfg["weight_decay"])
@@ -258,7 +280,10 @@ def run(cfg):
                     gold_type=b["type_y"], type_teacher_p=tp_p, return_states=use_sr,
                 )
                 tl, rl, al = fwd[0], fwd[1], fwd[2]
-                if cfg.get("use_crf", False):
+                if cfg.get("single_head", False):
+                    l_role = ce(rl.reshape(-1, rl.size(-1)).float(), b["merged_y"].reshape(-1))
+                    l_aao = rl.sum() * 0.0
+                elif cfg.get("use_crf", False):
                     l_role = model.role_crf(rl, b["role_y"].clamp(min=0), b["word_mask"])
                     l_aao = model.aao_crf(al, b["aao_y"].clamp(min=0), b["word_mask"])
                 else:

@@ -43,10 +43,17 @@ ID2AAO = {i: l for l, i in AAO_LABEL2ID.items()}
 
 
 def _detect_heads(ckpt):
-    """Detect which optional heads a checkpoint was trained with."""
+    """Detect which optional heads a checkpoint was trained with, and how many
+    ROLE labels it carries (the single-head ablation merges both label spaces)."""
     sd = torch.load(ckpt, map_location="cpu")
+    n_role = None
+    for k, v in sd.items():
+        if k.startswith("role_head.") and k.endswith(".weight") and v.dim() == 2:
+            n_role = v.shape[0]
     return {"use_crf": any(k.startswith("role_crf.") for k in sd),
-            "use_span_role": any(k.startswith("span_role_head.") for k in sd)}
+            "use_span_role": any(k.startswith("span_role_head.") for k in sd),
+            "single_head": not any(k.startswith("aao_head.") for k in sd),
+            "n_role_labels": n_role}
 
 
 @torch.no_grad()
@@ -64,8 +71,10 @@ def posteriors(ckpts, model_name, windows, tok, max_len=640, batch_size=16, devi
 
     heads = _detect_heads(ckpts[0])
     use_crf = use_crf or heads["use_crf"]
-    model = CarveModel(model_name, len(ROLE_LABELS), len(AAO_LABELS), len(EVENT_TYPES),
-                         use_crf=use_crf, use_span_role=heads["use_span_role"]).to(device)
+    n_role = heads["n_role_labels"] or len(ROLE_LABELS)
+    model = CarveModel(model_name, n_role, len(AAO_LABELS), len(EVENT_TYPES),
+                       use_crf=use_crf, use_span_role=heads["use_span_role"],
+                       single_head=heads["single_head"]).to(device)
     for ck in ckpts:
         model.load_state_dict(torch.load(ck, map_location=device))
         model.eval()
@@ -79,7 +88,9 @@ def posteriors(ckpts, model_name, windows, tok, max_len=640, batch_size=16, devi
                 asm = model.aao_crf.marginals(al, b["word_mask"]).cpu().numpy()
             else:
                 rsm = torch.softmax(rl.float(), -1).cpu().numpy()
-                asm = torch.softmax(al.float(), -1).cpu().numpy()
+                # Under the single-head ablation there is no separate AAO head:
+                # both span groups are decoded from the one merged tagger.
+                asm = rsm if al is None else torch.softmax(al.float(), -1).cpu().numpy()
             for j, idx in enumerate(batch["idx"].tolist()):
                 nv = int(batch["word_mask"][j].sum())
                 type_p[idx] += tsm[j] / len(ckpts)
@@ -100,8 +111,32 @@ def spans_with_conf(p, id2label):
     return out
 
 
-def apply_decoding_rules(spans, tau, merge_gap, min_len, n_tokens):
-    kept = [s for s in spans if s[3] >= tau.get(s[2], tau.get("_", 0.0)) and (s[1] - s[0]) >= min_len]
+def apply_decoding_rules(spans, tau, merge_gap, min_len, n_tokens, tau_short=None, short_len=None):
+    """Filter and merge decoded spans.
+
+    The default rule is a hard minimum length: a span shorter than `min_len` is
+    dropped whatever its confidence. That is a *length-conditioned threshold with
+    an infinite short-span threshold*, and it is what makes recall collapse to
+    14.3% on 1-4 token gold spans.
+
+    Passing `tau_short` and `short_len` replaces the infinity with a finite, higher
+    threshold, so a short span survives when the model is confident enough:
+
+        tau_eff(len) = tau_short   if len <  short_len
+                     = tau         if len >= short_len
+
+    The parameter count is unchanged (three), so this is not extra capacity fitted
+    to dev -- it is the same rule with the degenerate branch relaxed.
+    """
+    def keep(sp):
+        length = sp[1] - sp[0]
+        base = tau.get(sp[2], tau.get("_", 0.0))
+        if tau_short is not None and short_len is not None:
+            thr = tau_short if length < short_len else base
+            return sp[3] >= thr
+        return sp[3] >= base and length >= min_len
+
+    kept = [s for s in spans if keep(s)]
     if merge_gap > 0:
         kept.sort(key=lambda x: x[0])
         merged = []
@@ -153,16 +188,19 @@ def span_rescore(ckpts, model_name, windows, tok, spans_per_window, max_len=640,
             for sp, a in zip(spans_per_window, acc)]
 
 
-def decode_spans(windows, role_p, tau, merge_gap, min_len):
-    return [apply_decoding_rules(spans_with_conf(role_p[i], ID2ROLE), tau, merge_gap, min_len, len(w.tokens))
+def decode_spans(windows, role_p, tau, merge_gap, min_len, tau_short=None, short_len=None):
+    return [apply_decoding_rules(spans_with_conf(role_p[i], ID2ROLE), tau, merge_gap, min_len, len(w.tokens), tau_short, short_len)
             for i, w in enumerate(windows)]
 
 
-def records_from(windows, spans_per_window, aao_p, type_p):
+def records_from(windows, spans_per_window, aao_p, type_p, aao_precomputed=None):
+    """Build prediction records. `aao_precomputed` lets a caller supply already
+    decoded AAO spans (used by the single-head ablation, whose AAO spans come
+    from the same merged tagger as the role spans)."""
     recs = []
     for i, w in enumerate(windows):
         n = len(w.tokens)
-        asp = spans_with_conf(aao_p[i], ID2AAO)
+        asp = aao_precomputed[i] if aao_precomputed is not None else spans_with_conf(aao_p[i], ID2AAO)
         trig = next(((s, e) for s, e, t, _ in asp if t == "Action"), (0, min(1, n)))
         aao = [(s, e, t) for s, e, t, _ in asp if t != "Action"]
         recs.append(to_oneie_record(w.sent_id, w.tokens, EVENT_TYPES[int(type_p[i].argmax())],
@@ -170,11 +208,13 @@ def records_from(windows, spans_per_window, aao_p, type_p):
     return recs
 
 
-def build_records(windows, role_p, aao_p, type_p, tau, merge_gap, min_len, override=None):
+def build_records(windows, role_p, aao_p, type_p, tau, merge_gap, min_len, override=None,
+                  tau_short=None, short_len=None):
     recs = []
     for i, w in enumerate(windows):
         n = len(w.tokens)
-        rs = apply_decoding_rules(spans_with_conf(role_p[i], ID2ROLE), tau, merge_gap, min_len, n)
+        rs = apply_decoding_rules(spans_with_conf(role_p[i], ID2ROLE), tau, merge_gap, min_len, n,
+                                  tau_short, short_len)
         if override is not None:
             rs = [(s_, e_, override[i].get((s_, e_), t_)) for s_, e_, t_ in rs]
         asp = spans_with_conf(aao_p[i], ID2AAO)
@@ -273,7 +313,8 @@ if __name__ == "__main__":
             json.dump({"rules": rules, "dev_arg_c_iou_f1": best["f1"]}, open(a.out, "w"), indent=2)
     elif a.rules:
         r = json.load(open(a.rules))["rules"]
-        recs = build_records(windows, rp, ap_, tp, r["tau"], r["merge_gap"], r["min_len"], override)
+        recs = build_records(windows, rp, ap_, tp, r["tau"], r["merge_gap"], r["min_len"], override,
+                             tau_short=r.get("tau_short"), short_len=r.get("short_len"))
         m = score(recs, gold)
         print(f"\n=== FROZEN EVALUATION on {a.split} ===")
         print(f"{'metric':16s} {'P':>7} {'R':>7} {'F1':>7}")

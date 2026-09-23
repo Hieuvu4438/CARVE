@@ -63,8 +63,15 @@ def bio_labels(types):
 
 ROLE_LABELS = bio_labels(ROLE_TYPES)
 AAO_LABELS = bio_labels(AAO_TYPES)
+
+# Label space for the "single BIO head" ablation: the two groups merged into one
+# tagging problem. Because cross-group span overlap is 5.9%, a single layer must
+# delete labels on those windows -- which is exactly what the ablation measures.
+MERGED_TYPES = ROLE_TYPES + AAO_TYPES
+MERGED_LABELS = bio_labels(MERGED_TYPES)
 ROLE_LABEL2ID = {l: i for i, l in enumerate(ROLE_LABELS)}
 AAO_LABEL2ID = {l: i for i, l in enumerate(AAO_LABELS)}
+MERGED_LABEL2ID = {l: i for i, l in enumerate(MERGED_LABELS)}
 EVENT_TYPE2ID = {t: i for i, t in enumerate(EVENT_TYPES)}
 
 DOMAINS = ["ACL", "cscw", "bioinfo", "dh", "jmir"]

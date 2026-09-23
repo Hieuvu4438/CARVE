@@ -49,6 +49,8 @@ class CarveModel(nn.Module):
         dropout=0.1,
         use_crf=False,
         use_span_role=False,
+        use_type_cond=True,
+        single_head=False,
     ):
         super().__init__()
         self.config = AutoConfig.from_pretrained(model_name)
@@ -62,8 +64,13 @@ class CarveModel(nn.Module):
         self.type_head = nn.Linear(h, n_event_types)
         self.type_emb = nn.Embedding(n_event_types, h)
         nn.init.zeros_(self.type_emb.weight)
+        self.use_type_cond = use_type_cond
+        self.single_head = single_head
+        # Under `single_head` the ROLE head carries the merged label space and the
+        # AAO head does not exist; this ablates the two-disjoint-heads decision.
         self.role_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_role_labels))
-        self.aao_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_aao_labels))
+        if not single_head:
+            self.aao_head = nn.Sequential(nn.Linear(h, h), nn.GELU(), nn.Dropout(dropout), nn.Linear(h, n_aao_labels))
         self.use_span_role = use_span_role
         if use_span_role:
             # span-level role classifier: [h_start ; h_end ; mean(h)] -> role
@@ -94,9 +101,10 @@ class CarveModel(nn.Module):
             cond = torch.where(keep, gold_type, pred)
         else:
             cond = type_logits.argmax(-1)
-        w_cond = w + self.type_emb(cond).unsqueeze(1)
+        w_cond = w + self.type_emb(cond).unsqueeze(1) if self.use_type_cond else w
 
-        out = (type_logits, self.role_head(w_cond), self.aao_head(w))
+        aao_logits = None if self.single_head else self.aao_head(w)
+        out = (type_logits, self.role_head(w_cond), aao_logits)
         return out + (w_cond,) if return_states else out
 
     def span_roles(self, w_cond, spans):
