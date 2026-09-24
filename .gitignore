@@ -27,3 +27,9 @@ venv/
 .idea/
 .vscode/
 .DS_Store
+
+# Experiment: local regression sandbox (absolute symlinks) and the isolated copy
+# of the archived original-CARVE code used by T-P2; only its frozen rules are kept
+experiment/phase0_sandbox/
+experiment/archive_carve_full/*
+!experiment/archive_carve_full/assets/

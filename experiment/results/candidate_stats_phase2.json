@@ -1,0 +1,125 @@
+{
+  "id": "candidate_stats",
+  "created_at": "2026-09-24 11:53:02",
+  "seeds": {
+    "42": {
+      "oof": {
+        "windows": 1278,
+        "candidates": 6468,
+        "per_window": 5.061,
+        "positive_pct": 38.033,
+        "files": [
+          "/home/haipd/CLAVE/data/cands/oof_k0_s42.jsonl",
+          "/home/haipd/CLAVE/data/cands/oof_k1_s42.jsonl",
+          "/home/haipd/CLAVE/data/cands/oof_k2_s42.jsonl",
+          "/home/haipd/CLAVE/data/cands/oof_k3_s42.jsonl",
+          "/home/haipd/CLAVE/data/cands/oof_k4_s42.jsonl"
+        ]
+      },
+      "dev": {
+        "windows": 158,
+        "candidates": 792,
+        "per_window": 5.013,
+        "positive_pct": 42.172,
+        "files": [
+          "/home/haipd/CLAVE/data/cands/dev_s42.jsonl"
+        ]
+      },
+      "insample": {
+        "windows": 1278,
+        "candidates": 3897,
+        "per_window": 3.049,
+        "positive_pct": 98.46,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/insample_s42.jsonl"
+        ]
+      }
+    },
+    "13": {
+      "oof": {
+        "windows": 1278,
+        "candidates": 6402,
+        "per_window": 5.009,
+        "positive_pct": 38.535,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k0_s13.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k1_s13.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k2_s13.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k3_s13.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k4_s13.jsonl"
+        ]
+      },
+      "dev": {
+        "windows": 158,
+        "candidates": 815,
+        "per_window": 5.158,
+        "positive_pct": 42.331,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/dev_s13.jsonl"
+        ]
+      },
+      "insample": {
+        "windows": 1278,
+        "candidates": 3917,
+        "per_window": 3.065,
+        "positive_pct": 98.111,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/insample_s13.jsonl"
+        ]
+      }
+    },
+    "101": {
+      "oof": {
+        "windows": 1278,
+        "candidates": 6439,
+        "per_window": 5.038,
+        "positive_pct": 37.024,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k0_s101.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k1_s101.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k2_s101.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k3_s101.jsonl",
+          "/home/haipd/CLAVE/experiment/data/cands/oof_k4_s101.jsonl"
+        ]
+      },
+      "dev": {
+        "windows": 158,
+        "candidates": 801,
+        "per_window": 5.07,
+        "positive_pct": 42.821,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/dev_s101.jsonl"
+        ]
+      },
+      "insample": {
+        "windows": 1278,
+        "candidates": 3901,
+        "per_window": 3.052,
+        "positive_pct": 98.641,
+        "files": [
+          "/home/haipd/CLAVE/experiment/data/cands/insample_s101.jsonl"
+        ]
+      }
+    }
+  },
+  "gpu_seconds_from_logs": {
+    "42": {
+      "full_proposer": 528,
+      "oof_total_seconds": 3453,
+      "main_verifier": 599
+    },
+    "13": {
+      "full_proposer": 528,
+      "oof_total_seconds": 2388
+    },
+    "101": {
+      "full_proposer": 547,
+      "oof_total_seconds": 2366
+    }
+  },
+  "parameters": {
+    "proposer": 435098656,
+    "verifier": 437136522,
+    "combined": 872235178
+  }
+}

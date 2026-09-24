@@ -1,12 +1,39 @@
 #!/usr/bin/env bash
-# End-to-end reproduction of CARVE-simple + HONE. Run from the repository root
-# after `bash scripts/setup_data.sh`.
+# Reproduce one phase of the three-seed experiment, or the original release.
+# Run from the repository root after `bash scripts/setup_data.sh`.
 #
-# Protocol: stages 1-4 use train + dev only. Stage 5 touches the test split once,
-# with every checkpoint and decoding rule already frozen.
+# The released mode's stages 1-4 use train + dev only. Stage 5 touches test
+# once with the checkpoints and rules already frozen. The three-seed mode
+# follows experiment/EXPERIMENT_PLAN.md and stops after each phase.
 #
 # Cost on one 48 GB GPU: proposers ~10 min each (3 + 5 runs), verifier ~10-20 min.
 set -euo pipefail
+case "${1:-}" in
+  3-seed)
+    if [[ $# -ne 2 || ! "$2" =~ ^[1-7]$ ]]; then
+      printf 'Usage: bash scripts/reproduce.sh 3-seed PHASE (1–7)\n' >&2
+      exit 2
+    fi
+    exec bash experiment/scripts/reproduce.sh "$2"
+    ;;
+  p2-train|p2-test)
+    if [[ $# -ne 1 ]]; then
+      printf 'Usage: bash scripts/reproduce.sh p2-train|p2-test\n' >&2
+      exit 2
+    fi
+    exec bash experiment/scripts/reproduce_p2.sh "${1#p2-}"
+    ;;
+  released)
+    if [[ $# -ne 1 ]]; then
+      printf 'Usage: bash scripts/reproduce.sh released\n' >&2
+      exit 2
+    fi
+    ;;
+  *)
+    printf 'Usage: bash scripts/reproduce.sh {3-seed PHASE|p2-train|p2-test|released}\n' >&2
+    exit 2
+    ;;
+esac
 export PYTHONPATH=.
 SEED=42                   # proposer and verifier seed of the released system
 BASELINE_SEEDS=(42 13 101)

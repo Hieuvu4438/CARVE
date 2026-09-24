@@ -1,0 +1,441 @@
+{
+  "id": "clave_s42",
+  "split": "test",
+  "created_at": "2026-09-24 13:46:00",
+  "n_runs": 1,
+  "archive": true,
+  "rule": {
+    "path": "/home/haipd/CLAVE/assets/decoding_rule.json",
+    "content": {
+      "rule": {
+        "theta": 0.2,
+        "min_len": 1,
+        "nms": "any",
+        "type_lambda": 0.5,
+        "role_alpha": 0.25
+      },
+      "selection": "max MEAN dev Arg-C IoU over verifier runs",
+      "runs": [
+        "hs_v42_ps42"
+      ],
+      "prop_seeds": [
+        42
+      ],
+      "ensemble": false,
+      "dev_arg_c_iou_mean": 49.158249158249156,
+      "dev_arg_c_iou_std": 0.0,
+      "dev_per_run": [
+        49.158249158249156
+      ],
+      "frozen_at": "2026-09-23 19:31:30"
+    },
+    "frozen_at": "2026-09-23 19:31:30",
+    "mtime": 1790168194.2439544,
+    "timestamp_status": "recorded in rule"
+  },
+  "per_run": [
+    {
+      "run": "test_verifier_s42",
+      "seed": 42,
+      "prediction_file": "/home/haipd/CLAVE/preds/test_verifier_s42.jsonl",
+      "n_windows": 163,
+      "metrics": {
+        "trigger_rougeL": {
+          "p": 85.13287726748572,
+          "r": 76.78021782547387,
+          "f1": 77.81665246320992
+        },
+        "arg_i_exact": {
+          "p": 46.365914786967416,
+          "r": 34.709193245778614,
+          "f1": 39.69957081545065,
+          "matched": 185,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_c_exact": {
+          "p": 42.606516290726816,
+          "r": 31.894934333958723,
+          "f1": 36.48068669527897,
+          "matched": 170,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_i_overlap": {
+          "p": 81.45363408521304,
+          "r": 60.97560975609756,
+          "f1": 69.74248927038627,
+          "matched": 325,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_c_overlap": {
+          "p": 69.42355889724311,
+          "r": 51.969981238273924,
+          "f1": 59.442060085836914,
+          "matched": 277,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_i_scirex": {
+          "p": 76.19047619047619,
+          "r": 57.035647279549714,
+          "f1": 65.23605150214591,
+          "matched": 304,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_c_scirex": {
+          "p": 65.41353383458647,
+          "r": 48.96810506566604,
+          "f1": 56.00858369098714,
+          "matched": 261,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_i_iou": {
+          "p": 70.17543859649122,
+          "r": 52.5328330206379,
+          "f1": 60.08583690987125,
+          "matched": 280,
+          "pred": 399,
+          "gold": 533
+        },
+        "arg_c_iou": {
+          "p": 61.152882205513784,
+          "r": 45.77861163227016,
+          "f1": 52.36051502145922,
+          "matched": 244,
+          "pred": 399,
+          "gold": 533
+        },
+        "rolewise_iou": {
+          "Context": {
+            "matched": 39,
+            "pred_total": 83,
+            "gold_total": 142
+          },
+          "Purpose": {
+            "matched": 14,
+            "pred_total": 24,
+            "gold_total": 43
+          },
+          "Results": {
+            "matched": 66,
+            "pred_total": 105,
+            "gold_total": 116
+          },
+          "Analysis": {
+            "matched": 0,
+            "pred_total": 1,
+            "gold_total": 10
+          },
+          "Challenge": {
+            "matched": 35,
+            "pred_total": 51,
+            "gold_total": 58
+          },
+          "Method": {
+            "matched": 85,
+            "pred_total": 122,
+            "gold_total": 143
+          },
+          "Implications": {
+            "matched": 5,
+            "pred_total": 13,
+            "gold_total": 19
+          },
+          "Contradictions": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          },
+          "Ethical": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          }
+        },
+        "eventtype_iou": {
+          "Arg_I": {
+            "Methods/Approach": {
+              "matched": 116,
+              "pred_total": 161,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 79,
+              "pred_total": 115,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 76,
+              "pred_total": 106,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 9,
+              "pred_total": 17,
+              "gold_total": 38
+            }
+          },
+          "Arg_C": {
+            "Methods/Approach": {
+              "matched": 104,
+              "pred_total": 161,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 65,
+              "pred_total": 115,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 67,
+              "pred_total": 106,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 8,
+              "pred_total": 17,
+              "gold_total": 38
+            }
+          }
+        },
+        "domain_iou": {
+          "Arg_I": {
+            "cscw": {
+              "matched": 47,
+              "pred_total": 81,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 42,
+              "pred_total": 68,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 36,
+              "pred_total": 48,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 41,
+              "pred_total": 45,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 114,
+              "pred_total": 157,
+              "gold_total": 218
+            }
+          },
+          "Arg_C": {
+            "cscw": {
+              "matched": 39,
+              "pred_total": 81,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 30,
+              "pred_total": 68,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 28,
+              "pred_total": 48,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 39,
+              "pred_total": 45,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 108,
+              "pred_total": 157,
+              "gold_total": 218
+            }
+          }
+        },
+        "rougeL_domain": {
+          "cscw": [
+            0.8503574708120163,
+            0.8128338461894611,
+            0.8171972464280557
+          ],
+          "dh": [
+            0.8333037659508248,
+            0.665406537267151,
+            0.7030393410499242
+          ],
+          "ACL": [
+            0.9259259259259259,
+            0.8106798983991966,
+            0.8487298362909577
+          ],
+          "bioinfo": [
+            0.8544642857142858,
+            0.7992866681085389,
+            0.7932630492113251
+          ],
+          "jmir": [
+            0.8066690662278897,
+            0.739896639451593,
+            0.7254768671449129
+          ]
+        },
+        "rougeL_eventtype": {
+          "Methods/Approach": [
+            0.8965512945104782,
+            0.913034664820379,
+            0.8817392359520524
+          ],
+          "Background/Introduction": [
+            0.7627272727272727,
+            0.655787225616947,
+            0.6861177075105134
+          ],
+          "Results/Findings": [
+            0.8407879157879159,
+            0.7058205928829887,
+            0.7261209044855226
+          ],
+          "Conclusions/Implications": [
+            0.9563393665158371,
+            0.8038676830415961,
+            0.8404528121168222
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "trigger_rougeL": {
+      "p": {
+        "mean": 85.13287726748572,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 76.78021782547387,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 77.81665246320992,
+        "std": 0.0
+      }
+    },
+    "arg_i_exact": {
+      "p": {
+        "mean": 46.365914786967416,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 34.709193245778614,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 39.69957081545065,
+        "std": 0.0
+      }
+    },
+    "arg_c_exact": {
+      "p": {
+        "mean": 42.606516290726816,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 31.894934333958723,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 36.48068669527897,
+        "std": 0.0
+      }
+    },
+    "arg_i_overlap": {
+      "p": {
+        "mean": 81.45363408521304,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 60.97560975609756,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 69.74248927038627,
+        "std": 0.0
+      }
+    },
+    "arg_c_overlap": {
+      "p": {
+        "mean": 69.42355889724311,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 51.969981238273924,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 59.442060085836914,
+        "std": 0.0
+      }
+    },
+    "arg_i_scirex": {
+      "p": {
+        "mean": 76.19047619047619,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 57.035647279549714,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 65.23605150214591,
+        "std": 0.0
+      }
+    },
+    "arg_c_scirex": {
+      "p": {
+        "mean": 65.41353383458647,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 48.96810506566604,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 56.00858369098714,
+        "std": 0.0
+      }
+    },
+    "arg_i_iou": {
+      "p": {
+        "mean": 70.17543859649122,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 52.5328330206379,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 60.08583690987125,
+        "std": 0.0
+      }
+    },
+    "arg_c_iou": {
+      "p": {
+        "mean": 61.152882205513784,
+        "std": 0.0
+      },
+      "r": {
+        "mean": 45.77861163227016,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 52.36051502145922,
+        "std": 0.0
+      }
+    }
+  }
+}

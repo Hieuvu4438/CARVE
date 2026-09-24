@@ -1,0 +1,53 @@
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:  98%|█████████▊| 381/390 [00:00<00:00, 3791.31it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 3869.69it/s]
+[1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[argmax ] ArgC-IoU 39.20 (P31.6/R51.6)  ArgI-IoU 47.61  RgL 78.60
+
+=== FROZEN EVALUATION on test ===
+metric                 P       R      F1
+Arg-C IoU          53.32   46.72   49.80
+Arg-I IoU          62.10   54.41   58.00
+Arg-C EM           34.90   30.58   32.60
+Arg-I EM           38.97   34.15   36.40
+Arg-C overlap      63.38   55.53   59.20
+Arg-I overlap      73.66   64.54   68.80
+Arg-C SciREX       59.31   51.97   55.40
+Arg-I SciREX       69.81   61.16   65.20
+Trigger ROUGE-L    86.28   77.08   78.60
+
+per-domain Arg-C IoU F1:
+   ACL         57.39
+   bioinfo     73.79
+   cscw        51.14
+   dh          30.15
+   jmir        50.61
+per-event-type Arg-C IoU F1:
+   Background/Introduction     44.44
+   Conclusions/Implications    43.75
+   Methods/Approach            50.25
+   Results/Findings            56.57
+per-role Arg-C IoU F1:
+   Analysis           0.00  (gold 10)
+   Challenge         67.27  (gold 58)
+   Context           28.68  (gold 142)
+   Contradictions     0.00  (gold 1)
+   Ethical            0.00  (gold 1)
+   Implications      45.71  (gold 19)
+   Method            62.04  (gold 143)
+   Purpose           40.00  (gold 43)
+   Results           58.26  (gold 116)

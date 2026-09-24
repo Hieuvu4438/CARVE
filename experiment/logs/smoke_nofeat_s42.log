@@ -1,0 +1,21 @@
+train candidates 293 (positive 38.2%) | dev candidates 792
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 4319.29it/s]
+[1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep01 loss 1.439 | cand-acc 57.8 | ArgC-IoU 18.55 (P33.2/R12.9) | ArgI 43.77 | rule th=0.65 ml=1 nms=any | 8s
+BEST {"epoch": 1, "loss": 1.4390479583997984, "cand_acc": 57.82828282828283, "arg_c_iou_f1": 18.55072463768116, "arg_c_p": 33.160621761658035, "arg_c_r": 12.877263581488934, "arg_i_iou_f1": 43.768115942028984, "rougeL": 78.22280919669782, "rule": {"f1": 18.55072463768116, "theta": 0.65, "min_len": 1, "nms": "any"}, "secs": 8}

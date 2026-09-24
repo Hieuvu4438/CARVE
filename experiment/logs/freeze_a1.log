@@ -1,0 +1,28 @@
+{
+  "rule": {
+    "theta": 0.8,
+    "min_len": 3,
+    "nms": "any",
+    "type_lambda": 0.75,
+    "role_alpha": 0.5
+  },
+  "selection": "max MEAN dev Arg-C IoU over verifier runs",
+  "runs": [
+    "verifier_insample_v42_p42",
+    "verifier_insample_v13_p13",
+    "verifier_insample_v101_p101"
+  ],
+  "prop_seeds": [
+    42,
+    13,
+    101
+  ],
+  "dev_arg_c_iou_mean": 46.79833347986767,
+  "dev_arg_c_iou_std": 0.7887678482871691,
+  "dev_per_run": [
+    47.09246901811249,
+    47.39776951672863,
+    45.904761904761905
+  ],
+  "frozen_at": "2026-09-24 14:41:32"
+}

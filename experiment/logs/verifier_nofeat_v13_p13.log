@@ -1,0 +1,25 @@
+train candidates 6402 (positive 38.5%) | dev candidates 815
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:  67%|██████▋   | 261/390 [00:00<00:00, 2591.15it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 3231.88it/s]
+[1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep01 loss 1.033 | cand-acc 68.6 | ArgC-IoU 41.48 (P45.0/R38.4) | ArgI 59.50 | rule th=0.4 ml=3 nms=any | 117s
+ep02 loss 0.666 | cand-acc 73.6 | ArgC-IoU 48.82 (P52.2/R45.9) | ArgI 59.96 | rule th=0.3 ml=3 nms=any | 235s
+ep03 loss 0.457 | cand-acc 73.0 | ArgC-IoU 47.38 (P48.3/R46.5) | ArgI 59.08 | rule th=0.2 ml=3 nms=any | 353s
+ep04 loss 0.292 | cand-acc 71.5 | ArgC-IoU 46.68 (P49.9/R43.9) | ArgI 59.74 | rule th=0.2 ml=3 nms=any | 472s
+ep05 loss 0.173 | cand-acc 71.8 | ArgC-IoU 46.07 (P53.2/R40.6) | ArgI 57.47 | rule th=0.45 ml=2 nms=any | 592s
+BEST {"epoch": 2, "loss": 0.6656156719223911, "cand_acc": 73.61963190184049, "arg_c_iou_f1": 48.82226980728051, "arg_c_p": 52.17391304347826, "arg_c_r": 45.87525150905433, "arg_i_iou_f1": 59.957173447537485, "rougeL": 80.25318324492368, "rule": {"f1": 48.82226980728051, "theta": 0.3, "min_len": 3, "nms": "any"}, "secs": 235}

@@ -1,0 +1,989 @@
+{
+  "id": "proposer_argmax",
+  "split": "test",
+  "created_at": "2026-09-24 15:26:02",
+  "n_runs": 3,
+  "archive": false,
+  "rule": {
+    "path": "/home/haipd/CLAVE/experiment/assets/proposer_argmax_rule.json",
+    "content": {
+      "rules": {
+        "tau": 0.0,
+        "min_len": 1,
+        "merge_gap": 0
+      },
+      "selection": "fixed before test; no parameter search",
+      "seeds": [
+        42,
+        13,
+        101
+      ],
+      "dev_arg_c_iou_per_seed": [
+        38.32428238944918,
+        38.5670731707317,
+        38.058551617873654
+      ],
+      "dev_arg_c_iou_mean": 38.31663572601818,
+      "dev_arg_c_iou_std": 0.25434699924809545,
+      "frozen_at": "2026-09-24 15:25:47"
+    },
+    "frozen_at": "2026-09-24 15:25:47",
+    "mtime": 1790238347.763522,
+    "timestamp_status": "recorded in rule"
+  },
+  "per_run": [
+    {
+      "run": "test_proposer_argmax_s42",
+      "seed": 42,
+      "prediction_file": "/home/haipd/CLAVE/experiment/preds/test_proposer_argmax_s42.jsonl",
+      "n_windows": 163,
+      "metrics": {
+        "trigger_rougeL": {
+          "p": 85.13287726748572,
+          "r": 76.78021782547387,
+          "f1": 77.81665246320992
+        },
+        "arg_i_exact": {
+          "p": 24.519230769230766,
+          "r": 38.27392120075047,
+          "f1": 29.89010989010989,
+          "matched": 204,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_c_exact": {
+          "p": 21.995192307692307,
+          "r": 34.33395872420263,
+          "f1": 26.813186813186817,
+          "matched": 183,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_i_overlap": {
+          "p": 51.081730769230774,
+          "r": 79.73733583489681,
+          "f1": 62.27106227106227,
+          "matched": 425,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_c_overlap": {
+          "p": 42.78846153846153,
+          "r": 66.79174484052533,
+          "f1": 52.16117216117215,
+          "matched": 356,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_i_scirex": {
+          "p": 48.31730769230769,
+          "r": 75.42213883677297,
+          "f1": 58.901098901098905,
+          "matched": 402,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_c_scirex": {
+          "p": 40.625,
+          "r": 63.41463414634146,
+          "f1": 49.52380952380952,
+          "matched": 338,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_i_iou": {
+          "p": 39.78365384615385,
+          "r": 62.10131332082551,
+          "f1": 48.498168498168496,
+          "matched": 331,
+          "pred": 832,
+          "gold": 533
+        },
+        "arg_c_iou": {
+          "p": 32.93269230769231,
+          "r": 51.40712945590994,
+          "f1": 40.146520146520146,
+          "matched": 274,
+          "pred": 832,
+          "gold": 533
+        },
+        "rolewise_iou": {
+          "Context": {
+            "matched": 48,
+            "pred_total": 272,
+            "gold_total": 142
+          },
+          "Purpose": {
+            "matched": 16,
+            "pred_total": 54,
+            "gold_total": 43
+          },
+          "Results": {
+            "matched": 72,
+            "pred_total": 169,
+            "gold_total": 116
+          },
+          "Analysis": {
+            "matched": 0,
+            "pred_total": 11,
+            "gold_total": 10
+          },
+          "Challenge": {
+            "matched": 38,
+            "pred_total": 77,
+            "gold_total": 58
+          },
+          "Implications": {
+            "matched": 6,
+            "pred_total": 39,
+            "gold_total": 19
+          },
+          "Method": {
+            "matched": 94,
+            "pred_total": 210,
+            "gold_total": 143
+          },
+          "Contradictions": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          },
+          "Ethical": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          }
+        },
+        "eventtype_iou": {
+          "Arg_I": {
+            "Methods/Approach": {
+              "matched": 145,
+              "pred_total": 334,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 91,
+              "pred_total": 260,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 82,
+              "pred_total": 170,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 13,
+              "pred_total": 68,
+              "gold_total": 38
+            }
+          },
+          "Arg_C": {
+            "Methods/Approach": {
+              "matched": 118,
+              "pred_total": 334,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 74,
+              "pred_total": 260,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 72,
+              "pred_total": 170,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 10,
+              "pred_total": 68,
+              "gold_total": 38
+            }
+          }
+        },
+        "domain_iou": {
+          "Arg_I": {
+            "cscw": {
+              "matched": 53,
+              "pred_total": 145,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 57,
+              "pred_total": 214,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 42,
+              "pred_total": 89,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 44,
+              "pred_total": 72,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 135,
+              "pred_total": 312,
+              "gold_total": 218
+            }
+          },
+          "Arg_C": {
+            "cscw": {
+              "matched": 41,
+              "pred_total": 145,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 39,
+              "pred_total": 214,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 32,
+              "pred_total": 89,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 41,
+              "pred_total": 72,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 121,
+              "pred_total": 312,
+              "gold_total": 218
+            }
+          }
+        },
+        "rougeL_domain": {
+          "cscw": [
+            0.8503574708120163,
+            0.8128338461894611,
+            0.8171972464280557
+          ],
+          "dh": [
+            0.8333037659508248,
+            0.665406537267151,
+            0.7030393410499242
+          ],
+          "ACL": [
+            0.9259259259259259,
+            0.8106798983991966,
+            0.8487298362909577
+          ],
+          "bioinfo": [
+            0.8544642857142858,
+            0.7992866681085389,
+            0.7932630492113251
+          ],
+          "jmir": [
+            0.8066690662278897,
+            0.739896639451593,
+            0.7254768671449129
+          ]
+        },
+        "rougeL_eventtype": {
+          "Methods/Approach": [
+            0.8965512945104782,
+            0.913034664820379,
+            0.8817392359520524
+          ],
+          "Background/Introduction": [
+            0.7627272727272727,
+            0.655787225616947,
+            0.6861177075105134
+          ],
+          "Results/Findings": [
+            0.8407879157879159,
+            0.7058205928829887,
+            0.7261209044855226
+          ],
+          "Conclusions/Implications": [
+            0.9563393665158371,
+            0.8038676830415961,
+            0.8404528121168222
+          ]
+        }
+      }
+    },
+    {
+      "run": "test_proposer_argmax_s13",
+      "seed": 13,
+      "prediction_file": "/home/haipd/CLAVE/experiment/preds/test_proposer_argmax_s13.jsonl",
+      "n_windows": 163,
+      "metrics": {
+        "trigger_rougeL": {
+          "p": 84.28768828308706,
+          "r": 76.91653292703872,
+          "f1": 77.54526322996452
+        },
+        "arg_i_exact": {
+          "p": 23.910614525139664,
+          "r": 40.150093808630395,
+          "f1": 29.971988795518207,
+          "matched": 214,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_exact": {
+          "p": 20.782122905027933,
+          "r": 34.8968105065666,
+          "f1": 26.05042016806723,
+          "matched": 186,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_overlap": {
+          "p": 48.37988826815642,
+          "r": 81.23827392120076,
+          "f1": 60.64425770308124,
+          "matched": 433,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_overlap": {
+          "p": 41.00558659217877,
+          "r": 68.85553470919325,
+          "f1": 51.40056022408963,
+          "matched": 367,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_scirex": {
+          "p": 45.81005586592179,
+          "r": 76.92307692307693,
+          "f1": 57.42296918767508,
+          "matched": 410,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_scirex": {
+          "p": 38.435754189944134,
+          "r": 64.54033771106941,
+          "f1": 48.179271708683466,
+          "matched": 344,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_iou": {
+          "p": 38.88268156424581,
+          "r": 65.29080675422139,
+          "f1": 48.739495798319325,
+          "matched": 348,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_iou": {
+          "p": 31.955307262569832,
+          "r": 53.65853658536586,
+          "f1": 40.056022408963585,
+          "matched": 286,
+          "pred": 895,
+          "gold": 533
+        },
+        "rolewise_iou": {
+          "Context": {
+            "matched": 59,
+            "pred_total": 301,
+            "gold_total": 142
+          },
+          "Purpose": {
+            "matched": 16,
+            "pred_total": 56,
+            "gold_total": 43
+          },
+          "Results": {
+            "matched": 73,
+            "pred_total": 180,
+            "gold_total": 116
+          },
+          "Challenge": {
+            "matched": 38,
+            "pred_total": 83,
+            "gold_total": 58
+          },
+          "Implications": {
+            "matched": 8,
+            "pred_total": 41,
+            "gold_total": 19
+          },
+          "Method": {
+            "matched": 92,
+            "pred_total": 213,
+            "gold_total": 143
+          },
+          "Contradictions": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          },
+          "Analysis": {
+            "matched": 0,
+            "pred_total": 20,
+            "gold_total": 10
+          },
+          "Ethical": {
+            "matched": 0,
+            "pred_total": 1,
+            "gold_total": 1
+          }
+        },
+        "eventtype_iou": {
+          "Arg_I": {
+            "Methods/Approach": {
+              "matched": 148,
+              "pred_total": 325,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 93,
+              "pred_total": 302,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 85,
+              "pred_total": 176,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 22,
+              "pred_total": 92,
+              "gold_total": 38
+            }
+          },
+          "Arg_C": {
+            "Methods/Approach": {
+              "matched": 115,
+              "pred_total": 325,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 79,
+              "pred_total": 302,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 75,
+              "pred_total": 176,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 17,
+              "pred_total": 92,
+              "gold_total": 38
+            }
+          }
+        },
+        "domain_iou": {
+          "Arg_I": {
+            "cscw": {
+              "matched": 61,
+              "pred_total": 153,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 60,
+              "pred_total": 233,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 44,
+              "pred_total": 102,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 42,
+              "pred_total": 84,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 141,
+              "pred_total": 323,
+              "gold_total": 218
+            }
+          },
+          "Arg_C": {
+            "cscw": {
+              "matched": 47,
+              "pred_total": 153,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 40,
+              "pred_total": 233,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 33,
+              "pred_total": 102,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 40,
+              "pred_total": 84,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 126,
+              "pred_total": 323,
+              "gold_total": 218
+            }
+          }
+        },
+        "rougeL_domain": {
+          "cscw": [
+            0.8238275613275614,
+            0.7729437897218646,
+            0.7646805012448085
+          ],
+          "dh": [
+            0.8154924242424243,
+            0.6957378685767434,
+            0.7196481919602589
+          ],
+          "ACL": [
+            0.934951365506921,
+            0.8431714808907791,
+            0.8660061690341183
+          ],
+          "bioinfo": [
+            0.8714285714285713,
+            0.7862042461445381,
+            0.7866340454394641
+          ],
+          "jmir": [
+            0.7950605766782237,
+            0.7562628526444316,
+            0.7575138651481362
+          ]
+        },
+        "rougeL_eventtype": {
+          "Methods/Approach": [
+            0.8990901672024122,
+            0.8912673165224186,
+            0.8727013061209539
+          ],
+          "Background/Introduction": [
+            0.7573174603174603,
+            0.682025140608732,
+            0.69383708023426
+          ],
+          "Results/Findings": [
+            0.8236208236208237,
+            0.675248670678138,
+            0.7016194646615511
+          ],
+          "Conclusions/Implications": [
+            0.9338571428571428,
+            0.8506357989836251,
+            0.8632560772560772
+          ]
+        }
+      }
+    },
+    {
+      "run": "test_proposer_argmax_s101",
+      "seed": 101,
+      "prediction_file": "/home/haipd/CLAVE/experiment/preds/test_proposer_argmax_s101.jsonl",
+      "n_windows": 163,
+      "metrics": {
+        "trigger_rougeL": {
+          "p": 84.88317408562807,
+          "r": 74.75645564290875,
+          "f1": 76.29695709955341
+        },
+        "arg_i_exact": {
+          "p": 24.022346368715084,
+          "r": 40.33771106941838,
+          "f1": 30.11204481792717,
+          "matched": 215,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_exact": {
+          "p": 21.452513966480446,
+          "r": 36.02251407129456,
+          "f1": 26.890756302521012,
+          "matched": 192,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_overlap": {
+          "p": 47.59776536312849,
+          "r": 79.9249530956848,
+          "f1": 59.66386554621849,
+          "matched": 426,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_overlap": {
+          "p": 40.22346368715084,
+          "r": 67.54221388367729,
+          "f1": 50.42016806722689,
+          "matched": 360,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_scirex": {
+          "p": 45.47486033519553,
+          "r": 76.36022514071294,
+          "f1": 57.002801120448176,
+          "matched": 407,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_scirex": {
+          "p": 38.435754189944134,
+          "r": 64.54033771106941,
+          "f1": 48.179271708683466,
+          "matched": 344,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_i_iou": {
+          "p": 36.98324022346369,
+          "r": 62.10131332082551,
+          "f1": 46.358543417366946,
+          "matched": 331,
+          "pred": 895,
+          "gold": 533
+        },
+        "arg_c_iou": {
+          "p": 30.949720670391063,
+          "r": 51.969981238273924,
+          "f1": 38.79551820728292,
+          "matched": 277,
+          "pred": 895,
+          "gold": 533
+        },
+        "rolewise_iou": {
+          "Context": {
+            "matched": 42,
+            "pred_total": 269,
+            "gold_total": 142
+          },
+          "Purpose": {
+            "matched": 15,
+            "pred_total": 55,
+            "gold_total": 43
+          },
+          "Results": {
+            "matched": 79,
+            "pred_total": 196,
+            "gold_total": 116
+          },
+          "Challenge": {
+            "matched": 41,
+            "pred_total": 91,
+            "gold_total": 58
+          },
+          "Analysis": {
+            "matched": 0,
+            "pred_total": 36,
+            "gold_total": 10
+          },
+          "Implications": {
+            "matched": 8,
+            "pred_total": 22,
+            "gold_total": 19
+          },
+          "Method": {
+            "matched": 92,
+            "pred_total": 225,
+            "gold_total": 143
+          },
+          "Contradictions": {
+            "matched": 0,
+            "pred_total": 0,
+            "gold_total": 1
+          },
+          "Ethical": {
+            "matched": 0,
+            "pred_total": 1,
+            "gold_total": 1
+          }
+        },
+        "eventtype_iou": {
+          "Arg_I": {
+            "Methods/Approach": {
+              "matched": 144,
+              "pred_total": 367,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 81,
+              "pred_total": 294,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 90,
+              "pred_total": 174,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 16,
+              "pred_total": 60,
+              "gold_total": 38
+            }
+          },
+          "Arg_C": {
+            "Methods/Approach": {
+              "matched": 117,
+              "pred_total": 367,
+              "gold_total": 220
+            },
+            "Background/Introduction": {
+              "matched": 67,
+              "pred_total": 294,
+              "gold_total": 143
+            },
+            "Results/Findings": {
+              "matched": 80,
+              "pred_total": 174,
+              "gold_total": 132
+            },
+            "Conclusions/Implications": {
+              "matched": 13,
+              "pred_total": 60,
+              "gold_total": 38
+            }
+          }
+        },
+        "domain_iou": {
+          "Arg_I": {
+            "cscw": {
+              "matched": 58,
+              "pred_total": 148,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 51,
+              "pred_total": 225,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 38,
+              "pred_total": 106,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 43,
+              "pred_total": 89,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 141,
+              "pred_total": 327,
+              "gold_total": 218
+            }
+          },
+          "Arg_C": {
+            "cscw": {
+              "matched": 43,
+              "pred_total": 148,
+              "gold_total": 91
+            },
+            "dh": {
+              "matched": 36,
+              "pred_total": 225,
+              "gold_total": 112
+            },
+            "ACL": {
+              "matched": 31,
+              "pred_total": 106,
+              "gold_total": 60
+            },
+            "bioinfo": {
+              "matched": 40,
+              "pred_total": 89,
+              "gold_total": 52
+            },
+            "jmir": {
+              "matched": 127,
+              "pred_total": 327,
+              "gold_total": 218
+            }
+          }
+        },
+        "rougeL_domain": {
+          "cscw": [
+            0.8464015151515152,
+            0.7825912334100837,
+            0.787575986166522
+          ],
+          "dh": [
+            0.8287321937321938,
+            0.6706472455694535,
+            0.6941590068736797
+          ],
+          "ACL": [
+            0.9204745871412539,
+            0.7952638329831312,
+            0.8311836407890089
+          ],
+          "bioinfo": [
+            0.8701388888888888,
+            0.7422406439572516,
+            0.7585903065404621
+          ],
+          "jmir": [
+            0.79527172174231,
+            0.7366096923372465,
+            0.7412776350087796
+          ]
+        },
+        "rougeL_eventtype": {
+          "Methods/Approach": [
+            0.9173405959120245,
+            0.9171490855164324,
+            0.9001497206543736
+          ],
+          "Background/Introduction": [
+            0.7601919191919193,
+            0.633280908175645,
+            0.6614913435926029
+          ],
+          "Results/Findings": [
+            0.8185971435971435,
+            0.6455443462875788,
+            0.6731488600265536
+          ],
+          "Conclusions/Implications": [
+            0.9390000000000001,
+            0.8028977037455298,
+            0.8371732415816802
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "trigger_rougeL": {
+      "p": {
+        "mean": 84.76791321206696,
+        "std": 0.4342233371984557
+      },
+      "r": {
+        "mean": 76.15106879847377,
+        "std": 1.2096920442761236
+      },
+      "f1": {
+        "mean": 77.21962426424261,
+        "std": 0.8104930916282358
+      }
+    },
+    "arg_i_exact": {
+      "p": {
+        "mean": 24.15073055436184,
+        "std": 0.32398349878662847
+      },
+      "r": {
+        "mean": 39.587242026266416,
+        "std": 1.1412312439583874
+      },
+      "f1": {
+        "mean": 29.991381167851756,
+        "std": 0.11223112814570456
+      }
+    },
+    "arg_c_exact": {
+      "p": {
+        "mean": 21.40994305973356,
+        "std": 0.6076541413469212
+      },
+      "r": {
+        "mean": 35.0844277673546,
+        "std": 0.8597702992412438
+      },
+      "f1": {
+        "mean": 26.584787761258355,
+        "std": 0.4643983203119356
+      }
+    },
+    "arg_i_overlap": {
+      "p": {
+        "mean": 49.019794800171894,
+        "std": 1.8280082097781778
+      },
+      "r": {
+        "mean": 80.30018761726079,
+        "std": 0.8178046798387805
+      },
+      "f1": {
+        "mean": 60.859728506787334,
+        "std": 1.316886267278366
+      }
+    },
+    "arg_c_overlap": {
+      "p": {
+        "mean": 41.339170605930384,
+        "std": 1.314633871075933
+      },
+      "r": {
+        "mean": 67.7298311444653,
+        "std": 1.0446086984671754
+      },
+      "f1": {
+        "mean": 51.32730015082956,
+        "std": 0.8728110291088765
+      }
+    },
+    "arg_i_scirex": {
+      "p": {
+        "mean": 46.53407463114167,
+        "std": 1.5533927783343697
+      },
+      "r": {
+        "mean": 76.23514696685429,
+        "std": 0.7582461321439838
+      },
+      "f1": {
+        "mean": 57.77562306974072,
+        "std": 0.9970743133828321
+      }
+    },
+    "arg_c_scirex": {
+      "p": {
+        "mean": 39.16550279329609,
+        "std": 1.2639616577580144
+      },
+      "r": {
+        "mean": 64.16510318949344,
+        "std": 0.6499252561234029
+      },
+      "f1": {
+        "mean": 48.62745098039215,
+        "std": 0.7762692694986578
+      }
+    },
+    "arg_i_iou": {
+      "p": {
+        "mean": 38.54985854462112,
+        "std": 1.429565488647242
+      },
+      "r": {
+        "mean": 63.16447779862414,
+        "std": 1.8414548923496559
+      },
+      "f1": {
+        "mean": 47.865402571284925,
+        "std": 1.3105449625096128
+      }
+    },
+    "arg_c_iou": {
+      "p": {
+        "mean": 31.9459067468844,
+        "std": 0.9915192412942161
+      },
+      "r": {
+        "mean": 52.34521575984991,
+        "std": 1.1716694180860079
+      },
+      "f1": {
+        "mean": 39.66602025425555,
+        "std": 0.7552336197914994
+      }
+    }
+  }
+}

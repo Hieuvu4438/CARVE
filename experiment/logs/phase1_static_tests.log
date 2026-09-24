@@ -1,0 +1,9 @@
+test_default_verifier_rng_and_state_layout (test_phase1_static.Phase1StaticTests.test_default_verifier_rng_and_state_layout) ... ok
+test_read_only_paths (test_phase1_static.Phase1StaticTests.test_read_only_paths) ... ok
+test_registered_decoding_constraints (test_phase1_static.Phase1StaticTests.test_registered_decoding_constraints) ... ok
+test_test_look_is_logged_once_before_work (test_phase1_static.Phase1StaticTests.test_test_look_is_logged_once_before_work) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.016s
+
+OK

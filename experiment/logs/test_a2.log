@@ -1,0 +1,16 @@
+frozen rule (frozen at 2026-09-24 14:43:42): {'theta': 0.3, 'min_len': 3, 'nms': 'any', 'type_lambda': 0.5, 'role_alpha': 0.5}
+verifier_nofeat_v42_p42: saved /home/haipd/CLAVE/experiment/runs/verifier_nofeat_v42_p42/test_probs.npy
+verifier_nofeat_v42_p42: ROUGE-L   P 85.13  R 76.78  F1 77.82
+verifier_nofeat_v42_p42: Arg-I IoU P 66.03  R 52.16  F1 58.28
+verifier_nofeat_v42_p42: Arg-C IoU P 59.14  R 46.72  F1 52.20
+verifier_nofeat_v13_p13: saved /home/haipd/CLAVE/experiment/runs/verifier_nofeat_v13_p13/test_probs.npy
+verifier_nofeat_v13_p13: ROUGE-L   P 84.29  R 76.92  F1 77.55
+verifier_nofeat_v13_p13: Arg-I IoU P 69.35  R 56.47  F1 62.25
+verifier_nofeat_v13_p13: Arg-C IoU P 58.06  R 47.28  F1 52.12
+verifier_nofeat_v101_p101: saved /home/haipd/CLAVE/experiment/runs/verifier_nofeat_v101_p101/test_probs.npy
+verifier_nofeat_v101_p101: ROUGE-L   P 84.88  R 74.76  F1 76.30
+verifier_nofeat_v101_p101: Arg-I IoU P 72.22  R 51.22  F1 59.93
+verifier_nofeat_v101_p101: Arg-C IoU P 60.32  R 42.78  F1 50.05
+ROUGE-L    P 84.77 ± 0.43  R 76.15 ± 1.21  F1 77.22 ± 0.81
+Arg-I IoU  P 69.20 ± 3.10  R 53.28 ± 2.80  F1 60.16 ± 2.00
+Arg-C IoU  P 59.18 ± 1.13  R 45.59 ± 2.45  F1 51.46 ± 1.22

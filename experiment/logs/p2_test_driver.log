@@ -1,0 +1,5 @@
+/home/haipd/SciEvent/method/CARVE-full/assets/decoding_rules.json: OK
+/home/haipd/SciEvent/method/CARVE-full/assets/decoding_rules.carve_simple.json: OK
+no-type checkpoints have zero type embeddings; archive decoder is equivalent
+/home/haipd/CLAVE/experiment/archive_carve_full/assets/rules_abl_no_type_cond.json 2026-09-24 16:54:56
+| 2026-09-24T16:54:56+07:00 | T-P2a | abl_no_type_cond_s42, abl_no_type_cond_s13, abl_no_type_cond_s101 | /home/haipd/CLAVE/experiment/archive_carve_full/assets/rules_abl_no_type_cond.json | 2026-09-24 16:54:56 | /home/haipd/CLAVE/experiment/archive_carve_full/preds/test_abl_no_type_cond_s42.jsonl, /home/haipd/CLAVE/experiment/archive_carve_full/preds/test_abl_no_type_cond_s13.jsonl, /home/haipd/CLAVE/experiment/archive_carve_full/preds/test_abl_no_type_cond_s101.jsonl | RUNNING | pre-registered T-P2; isolated archive copy; sha256=51b116e74556194a0ef9c0aec1b6f130745f61927beddb7efdb49d200e28a79b |

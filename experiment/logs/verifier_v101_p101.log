@@ -1,0 +1,25 @@
+train candidates 6439 (positive 37.0%) | dev candidates 801
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 4041.84it/s]
+[1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep01 loss 1.038 | cand-acc 67.5 | ArgC-IoU 39.56 (P39.5/R39.6) | ArgI 57.83 | rule th=0.2 ml=3 nms=any | 118s
+ep02 loss 0.673 | cand-acc 73.9 | ArgC-IoU 48.37 (P57.3/R41.9) | ArgI 57.44 | rule th=0.3 ml=1 nms=any | 239s
+ep03 loss 0.476 | cand-acc 72.9 | ArgC-IoU 46.33 (P48.4/R44.5) | ArgI 59.33 | rule th=0.2 ml=2 nms=any | 360s
+ep04 loss 0.303 | cand-acc 72.4 | ArgC-IoU 46.35 (P50.5/R42.9) | ArgI 57.67 | rule th=0.2 ml=1 nms=any | 479s
+ep05 loss 0.183 | cand-acc 72.9 | ArgC-IoU 45.02 (P53.9/R38.6) | ArgI 55.33 | rule th=0.35 ml=3 nms=any | 599s
+BEST {"epoch": 2, "loss": 0.6727451662330524, "cand_acc": 73.90761548064918, "arg_c_iou_f1": 48.372093023255815, "arg_c_p": 57.30027548209367, "arg_c_r": 41.85110663983904, "arg_i_iou_f1": 57.44186046511628, "rougeL": 79.35864729196219, "rule": {"f1": 48.372093023255815, "theta": 0.3, "min_len": 1, "nms": "any"}, "secs": 239}

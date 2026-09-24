@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "tau": 0.0,
+    "min_len": 1,
+    "merge_gap": 0
+  },
+  "selection": "fixed before test; no parameter search",
+  "seeds": [
+    42,
+    13,
+    101
+  ],
+  "dev_arg_c_iou_per_seed": [
+    38.32428238944918,
+    38.5670731707317,
+    38.058551617873654
+  ],
+  "dev_arg_c_iou_mean": 38.31663572601818,
+  "dev_arg_c_iou_std": 0.25434699924809545,
+  "frozen_at": "2026-09-24 15:25:47"
+}

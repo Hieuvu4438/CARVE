@@ -1,0 +1,5 @@
+frozen rule (frozen at 2026-09-24 10:10:03): {'theta': 0.2, 'min_len': 1, 'nms': 'any', 'type_lambda': 0.5, 'role_alpha': 0.25}
+verifier_s42: reused /home/haipd/CLAVE/runs/verifier_s42/test_probs.npy
+verifier_s42: ROUGE-L   P 85.13  R 76.78  F1 77.82
+verifier_s42: Arg-I IoU P 70.18  R 52.53  F1 60.09
+verifier_s42: Arg-C IoU P 61.15  R 45.78  F1 52.36

@@ -1,0 +1,69 @@
+{
+  "method": "scripts/bootstrap_ci.py, 5000 paired window resamples, seed 0; each side = mean of its 3 seed files; reference = CARVE-simple preds/test_proposer_s*.jsonl",
+  "T-P2a_abl_no_type_cond_vs_carve_simple": {
+    "arg_c_iou": {
+      "sys": 49.82,
+      "ref": 50.73,
+      "delta": -0.91,
+      "ci95": [
+        -2.73,
+        0.97
+      ],
+      "p_gt0": 0.174
+    },
+    "arg_i_iou": {
+      "sys": 57.28,
+      "ref": 58.58,
+      "delta": -1.31,
+      "ci95": [
+        -3.28,
+        0.66
+      ],
+      "p_gt0": 0.095
+    }
+  },
+  "T-P2b_abl_single_head_vs_carve_simple": {
+    "arg_c_iou": {
+      "sys": 50.76,
+      "ref": 50.73,
+      "delta": 0.03,
+      "ci95": [
+        -1.41,
+        1.51
+      ],
+      "p_gt0": 0.515
+    },
+    "arg_i_iou": {
+      "sys": 58.48,
+      "ref": 58.58,
+      "delta": -0.1,
+      "ci95": [
+        -1.65,
+        1.44
+      ],
+      "p_gt0": 0.456
+    }
+  },
+  "T-P1_argmax_vs_calibrated": {
+    "arg_c_iou": {
+      "sys": 39.67,
+      "ref": 50.73,
+      "delta": -11.07,
+      "ci95": [
+        -13.36,
+        -8.85
+      ],
+      "p_gt0": 0.0
+    },
+    "arg_i_iou": {
+      "sys": 47.87,
+      "ref": 58.58,
+      "delta": -10.72,
+      "ci95": [
+        -13.35,
+        -8.08
+      ],
+      "p_gt0": 0.0
+    }
+  }
+}

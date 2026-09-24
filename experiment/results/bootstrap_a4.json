@@ -1,0 +1,27 @@
+{
+  "id": "bootstrap_a4",
+  "n_resamples": 5000,
+  "arg_c_iou": {
+    "sys": 52.16,
+    "ref": 52.45,
+    "delta": -0.29,
+    "ci_low": -0.73,
+    "ci_high": 0.08,
+    "p_gt_zero": 0.051,
+    "sys_ci_low": 47.59,
+    "sys_ci_high": 56.69,
+    "oneie": 41.61
+  },
+  "arg_i_iou": {
+    "sys": 60.49,
+    "ref": 60.49,
+    "delta": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.0,
+    "p_gt_zero": 0.0,
+    "sys_ci_low": 56.22,
+    "sys_ci_high": 64.61,
+    "oneie": 53.57
+  },
+  "created_at": "2026-09-24 14:48:20"
+}

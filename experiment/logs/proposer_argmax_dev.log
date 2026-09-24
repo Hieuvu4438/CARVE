@@ -1,0 +1,6 @@
+seed 42: trigger_rougeL P 83.71 R 80.31 F1 78.35  arg_i_iou P 37.88 R 60.36 F1 46.55  arg_c_iou P 31.19 R 49.70 F1 38.32
+seed 13: trigger_rougeL P 84.85 R 81.40 F1 80.25  arg_i_iou P 38.65 R 63.38 F1 48.02  arg_c_iou P 31.04 R 50.91 F1 38.57
+seed 101: trigger_rougeL P 84.94 R 80.18 F1 79.36  arg_i_iou P 38.45 R 61.97 F1 47.46  arg_c_iou P 30.84 R 49.70 F1 38.06
+trigger_rougeL  P 84.50 ± 0.68  R 80.63 ± 0.67  F1 79.32 ± 0.95
+arg_i_iou       P 38.33 ± 0.40  R 61.90 ± 1.51  F1 47.34 ± 0.74
+arg_c_iou       P 31.02 ± 0.18  R 50.10 ± 0.70  F1 38.32 ± 0.25

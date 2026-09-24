@@ -1,0 +1,53 @@
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 4268.23it/s]
+[1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[argmax ] ArgC-IoU 40.29 (P33.1/R51.6)  ArgI-IoU 48.79  RgL 76.32
+
+=== FROZEN EVALUATION on test ===
+metric                 P       R      F1
+Arg-C IoU          55.69   44.09   49.21
+Arg-I IoU          63.98   50.66   56.54
+Arg-C EM           36.97   29.27   32.67
+Arg-I EM           40.76   32.27   36.02
+Arg-C overlap      65.64   51.97   58.01
+Arg-I overlap      75.36   59.66   66.60
+Arg-C SciREX       60.43   47.84   53.40
+Arg-I SciREX       69.91   55.35   61.78
+Trigger ROUGE-L    81.91   76.90   76.32
+
+per-domain Arg-C IoU F1:
+   ACL         59.46
+   bioinfo     69.23
+   cscw        48.04
+   dh          27.27
+   jmir        51.43
+per-event-type Arg-C IoU F1:
+   Background/Introduction     43.87
+   Conclusions/Implications    34.48
+   Methods/Approach            53.85
+   Results/Findings            51.26
+per-role Arg-C IoU F1:
+   Analysis           0.00  (gold 10)
+   Challenge         62.39  (gold 58)
+   Context           28.69  (gold 142)
+   Contradictions     0.00  (gold 1)
+   Ethical            0.00  (gold 1)
+   Implications      41.38  (gold 19)
+   Method            61.99  (gold 143)
+   Purpose           33.90  (gold 43)
+   Results           58.04  (gold 116)

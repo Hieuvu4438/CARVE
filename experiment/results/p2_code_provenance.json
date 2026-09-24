@@ -1,0 +1,42 @@
+{
+  "archive_source": "/home/haipd/SciEvent/method/CARVE-full",
+  "isolated_copy": "/home/haipd/CLAVE/experiment/archive_carve_full",
+  "files": {
+    "carve/train.py": {
+      "archive_sha256": "170ab0c9b216a1d8ce244e91533b13389c637191d54947a37a251b172e241df5",
+      "isolated_sha256": "170ab0c9b216a1d8ce244e91533b13389c637191d54947a37a251b172e241df5",
+      "identical": true
+    },
+    "carve/model.py": {
+      "archive_sha256": "508b6f2b93e11d002d49dda27657c7962d543d0c083f3de607ded6e7bf729752",
+      "isolated_sha256": "508b6f2b93e11d002d49dda27657c7962d543d0c083f3de607ded6e7bf729752",
+      "identical": true
+    },
+    "carve/decode.py": {
+      "archive_sha256": "6b80ca5ca08aa0a20790e651d2fdb44b183b065b43a9afc57ca7cab7351dcc8b",
+      "isolated_sha256": "6b80ca5ca08aa0a20790e651d2fdb44b183b065b43a9afc57ca7cab7351dcc8b",
+      "identical": true
+    },
+    "scripts/freeze_rules.py": {
+      "archive_sha256": "879384a5c6d24dae44bf8ffedfa472c897f06c154a7f405d3c71f41ceaa7e027",
+      "isolated_sha256": "879384a5c6d24dae44bf8ffedfa472c897f06c154a7f405d3c71f41ceaa7e027",
+      "identical": true
+    },
+    "configs/abl_no_type_cond.json": {
+      "archive_sha256": "b8ec76ba5b69dbcacf5f69fb57afceb33647abcd55d65b9c88ec3ab9656bfb8b",
+      "isolated_sha256": "b8ec76ba5b69dbcacf5f69fb57afceb33647abcd55d65b9c88ec3ab9656bfb8b",
+      "identical": true
+    },
+    "configs/abl_single_head.json": {
+      "archive_sha256": "df906e68824b6fd6260267876fb211dc258ce4cf67a959b28716e1a83c54a6ef",
+      "isolated_sha256": "df906e68824b6fd6260267876fb211dc258ce4cf67a959b28716e1a83c54a6ef",
+      "identical": true
+    },
+    "scripts/freeze_and_test_simple.py": {
+      "archive_sha256": "d7e980a8e7ca55af12b6f4debed73da6380495b03446a6097a721af557e3e186",
+      "isolated_sha256": "49f64c0e2e2a6826407c397a19e5ba5ee115258bd2fda589c130a123bd2402eb",
+      "identical": false
+    }
+  },
+  "note": "Only the isolated single-head freeze/test driver was split into registered stages and gated by TEST_LOG; model, training, decoding, grid, and no-type freeze code are byte-identical."
+}

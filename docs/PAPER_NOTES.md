@@ -9,6 +9,10 @@ the official SciEvent split (1,278 / 158 / 163 windows), scored with the
 benchmark's own `EM_overlap_eval.py` (imported verbatim). "Seed 42" means
 proposer seed 42 and verifier seed 42 unless stated.
 
+**Current main result:** the registered three-seed extension is in §10 and
+`experiment/tables/T1.md`–`T8.md`. Sections 0–9 retain the original one-seed
+release and its development history.
+
 ---
 
 ## 0. Claims
@@ -300,3 +304,126 @@ Each row is labelled with the configuration it was measured on. Rows marked *ori
 Development records live in the SciEvent research repository:
 - `method/HONE/`: `RESEARCH_LOG.md` stages 0–13, `HYPOTHESES.md`, `DECISIONS.md`, `CARVE_SIMPLE_REPORT.md`, logs, predictions;
 - `method/CARVE-full/`: the previous release of this repository with its ablations.
+
+## 10. Registered three-seed extension (2026-09-24)
+
+### 10.1 Protocol and provenance
+
+The three independent pairs are proposer/verifier seeds **42/42, 13/13, and
+101/101**. A single decoding rule was selected by **mean dev Arg-C IoU F1**
+across the three verifier runs and frozen at 2026-09-24 13:45:39 before the
+registered T-main test look. The rule in
+`experiment/assets/decoding_rule_3seed.json` is θ 0.30, min_len 3, NMS `any`,
+role α 0.50, type λ 0.50. The original one-seed release still uses
+`assets/decoding_rule.json` (θ 0.20, min_len 1, α 0.25, λ 0.50).
+
+The complete pre-registration is `experiment/EXPERIMENT_PLAN.md`. Every new
+test look, rule timestamp, output path and result is in
+`experiment/TEST_LOG.md`. T-main, T-A1, T-A2, T-A3–A7a/b and T-P1 were each
+evaluated once under their own frozen rules. Optional T-P2a/b was explicitly
+authorized by the user for Phase 7. The Phase-2 candidate diagnostic that
+looked at test gold labels outside the plan is retained in TEST_LOG as a
+**post-hoc mistake**; it did not select a checkpoint, rule, or model variant.
+The original release was itself chosen after earlier test comparisons, as
+described in §3; this extension does not erase that history.
+
+### 10.2 Main results
+
+All figures below are **mean ± sample standard deviation** across the three
+pairs. The complete P/R/F1 tables are generated from `experiment/results/*.json`
+by `experiment/scripts/tables.py`: `experiment/tables/T1.md` (trigger),
+`T2.md` (arguments), `T3.md` (four matching modes), and `T4.md` (bootstrap).
+
+| System | Test Arg-C IoU F1 | Test Arg-I IoU F1 | Trigger ROUGE-L F1 | Rule |
+|---|---:|---:|---:|---|
+| Original CLAVE, one seed | 52.36 | 60.09 | 77.82 | `assets/decoding_rule.json` |
+| **CLAVE, three seeds** | **52.45 ± 0.73** | **60.49 ± 1.25** | **77.22 ± 0.81** | `experiment/assets/decoding_rule_3seed.json` |
+| CARVE-simple, three seeds | 50.73 ± 0.19 | 58.58 ± 0.57 | 77.22 ± 0.81 | `assets/proposer_rule.json` |
+| Original CARVE, three seeds (archive) | 50.48 ± 1.15 | 57.95 ± 2.46 | 76.93 ± 0.80 | archived rule |
+
+CLAVE's shared-rule dev Arg-C is **48.43 ± 0.47**, versus CARVE-simple
+**48.10 ± 0.96**. The registered paired-window bootstrap (5,000 resamples of
+the 163 test windows, averaging three runs on each side) gives CLAVE minus
+CARVE-simple **+1.72 [+0.24, +3.30]** Arg-C and **+1.90 [+0.21, +3.72]**
+Arg-I. Against original CARVE, Arg-C is +1.97 [−0.20, +4.07] and Arg-I is
++2.54 [+0.45, +4.65]. The absolute CLAVE confidence intervals are
+[47.87, 57.08] Arg-C and [56.22, 64.61] Arg-I. OneIE supplies only published
+aggregate scores here (41.61 Arg-C, 53.57 Arg-I), so no paired comparison
+against its per-window predictions is available. CLAVE's trigger score equals
+its own proposer's score by construction.
+
+### 10.3 Registered hypotheses and ablations
+
+The pre-registered support threshold is **CLAVE minus comparator ≥ +0.5 dev
+Arg-C**. Test comparisons are reported separately and do not overturn the
+dev decision. The full ablation table with P/R/F1, rules and test bootstrap
+intervals is `experiment/tables/T5.md`.
+
+| Hypothesis | Dev contrast | Decision | Test contrast (CLAVE minus comparator), 95% CI |
+|---|---:|---|---:|
+| G1, verifier vs CARVE-simple | +0.33 | rejected | +1.72 [+0.24, +3.30] |
+| G2, cross-fitting vs in-sample | +1.63 | supported | +3.48 [+2.10, +4.92] |
+| G3, proposer features vs text-only | −0.66 | rejected | +0.99 [0.00, +2.03] at reported precision |
+| G4, role mixing vs α=1 | +1.07 | supported | +2.46 [+0.56, +4.35] |
+| G5, type combination vs λ=0 | +0.08 | rejected | +0.15 [0.00, +0.48] at reported precision |
+
+The text-only and λ=0 test intervals touch zero at the reported precision.
+NMS `iou` and `wis` have the same scores as `any` in all three runs. `iou`
+predictions are byte-identical to `any`; `wis` changes record ordering/IDs but
+not the per-window event-type/role/span sets. This is a descriptive identity,
+not evidence for a gain from a different NMS rule.
+
+### 10.4 Phase-7 proposer and error analysis
+
+The fixed argmax proposer rule (τ 0, min_len 1; T-P1) scores **38.32 ± 0.25**
+dev and **39.67 ± 0.76** test Arg-C. The calibrated CARVE-simple rule scores
+**48.10 ± 0.96** dev and **50.73 ± 0.19** test. The full proposer-design
+table, including the historical same-grid ablations, is
+`experiment/tables/T6.md`.
+
+The descriptive test analysis in `experiment/tables/T7.md` reports role,
+event-type and domain P/R/F1, gold-span-length recall, error buckets, and
+precision/recall shifts. For example, Arg-C precision rises **+6.52 points**
+and recall falls **0.94 points** versus CARVE-simple, averaged over three
+paired runs. The dev oracle keep+role values under the *new* shared rule are
+69.91 / 73.47 / 72.44 for seeds 42/13/101; the earlier seed-42 value 72.20
+in §2 used the old one-seed rule and is not directly comparable. T7 separates
+the event-type-only oracle at decoding from the joint keep+role+type oracle.
+`experiment/tables/T8.md` records candidate counts, positive rates, parameter
+counts and elapsed training times. Test descriptive analysis was generated
+before the optional T-P2 evaluation, a Phase-7 ordering deviation; no T7
+value was used to choose T-P2 training, rules or checkpoints.
+
+### 10.5 Proposer design, 2×2 factorial on test (T-P2a/b)
+
+The two middle cells were retrained with the archived CARVE code in an isolated
+copy (`experiment/archive_carve_full/`). The training code is byte-identical to
+the archive (`experiment/results/p2_code_provenance.json`). Each row has one
+rule frozen on mean dev Arg-C over seeds 42/13/101 before its registered test
+look.
+
+| design | dev Arg-C | test Arg-I F1 | test Arg-C F1 | Arg-C Δ vs CARVE-simple [95 % CI] |
+|---|---:|---:|---:|---:|
+| two heads + type conditioning (original CARVE, archive) | 47.14 ± 0.26 | 57.95 ± 2.46 | 50.48 ± 1.15 | −0.25 [−2.12, +1.66] |
+| two heads, no conditioning (T-P2a; τ 0.90, ml 3) | 47.13 ± 1.32 | 57.28 ± 0.73 | 49.82 ± 0.62 | −0.91 [−2.73, +0.97] |
+| one head + conditioning (T-P2b; τ 0.88, ml 3) | 48.59 ± 3.13 | 58.48 ± 0.56 | 50.76 ± 0.39 | +0.03 [−1.41, +1.51] |
+| **one head, no conditioning (CARVE-simple)** | 48.10 ± 0.96 | 58.58 ± 0.57 | 50.73 ± 0.19 | — |
+
+- No cell differs from CARVE-simple on test; every interval covers zero. This confirms on test what the dev ablations showed: both removed components are inert. CARVE-simple is the simplest cell and has the lowest test variance.
+- Calibration is the proposer component that matters: argmax decoding (T-P1) is −11.07 Arg-C [−13.36, −8.85] against the calibrated rule.
+- Bootstrap values are in `experiment/results/bootstrap_phase7.json`.
+- **Execution note (logged in TEST_LOG):** the first T-P2a test pass crashed after scoring seed 42. The archive decoder writes `metrics.test.json` into a `preds/` directory it does not create, and no prediction file had been written. The same frozen rule and checkpoints were re-run once to completion, so it remains the same registered look. `experiment/scripts/reproduce_p2.sh` now creates the directory first.
+- After recording the results, the six T-P2 checkpoints were deleted (plan §8). Their logs, dev predictions and test predictions are kept.
+
+### 10.6 Seed-level operating points
+
+Under the shared rule (θ 0.30), the three runs reach similar Arg-C F1 at different precision/recall operating points:
+
+| pair | Arg-C P / R / F1 |
+|---|---|
+| 42/42 | 64.36 / 45.40 / 53.25 |
+| 13/13 | 52.40 / 51.22 / 51.80 |
+| 101/101 | 65.54 / 43.53 / 52.31 |
+
+- The seed-13 verifier was selected at epoch 1 on dev (48.02), before its keep scores had sharpened. It therefore keeps more spans: 890 predicted arguments, against 751 and 733.
+- This is why the three-seed P and R standard deviations (±7.27 / ±4.01 on Arg-C) are much larger than the F1 standard deviation (±0.73). Report it with any P/R table.
